@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="he" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>mi-cash · Clearing Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --surface: #F7F9FC;
+    --obsidian: #0F172A;
+    --cobalt: #3B82F6;
+    --violet: #8B5CF6;
+    --mint: #10B981;
+    --danger: #DC2626;
+    --grad: linear-gradient(135deg, #3B82F6, #8B5CF6);
+    --grad-rev: linear-gradient(135deg, #8B5CF6, #3B82F6);
+    --silk: rgba(255, 255, 255, 0.4);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--surface);
+    color: var(--obsidian);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  .glass {
+    border: 1px solid var(--silk);
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.08);
+  }
+
+  /* Ambient blobs */
+  .ambient { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+  .blob { position: absolute; border-radius: 50%; filter: blur(120px); }
+  .blob-1 { top: -160px; left: -128px; height: 520px; width: 520px; background: linear-gradient(135deg, rgba(59,130,246,.2), rgba(139,92,246,.1)); }
+  .blob-2 { top: 33%; right: -160px; height: 600px; width: 600px; background: linear-gradient(45deg, rgba(139,92,246,.15), rgba(59,130,246,.05)); }
+  .blob-3 { bottom: -200px; left: 33%; height: 480px; width: 480px; background: linear-gradient(45deg, rgba(16,185,129,.1), rgba(59,130,246,.1)); }
+
+  /* Header */
+  header {
+    position: relative; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 24px;
+  }
+  @media (min-width: 768px) { header { padding: 20px 48px; } }
+
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-mark {
+    height: 36px; width: 36px; border-radius: 12px;
+    background: var(--grad);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 10px 20px -5px rgba(59,130,246,0.4);
+  }
+  .logo-mark span { color: #fff; font-weight: 600; font-size: 14px; }
+  .logo-text { font-weight: 600; font-size: 18px; letter-spacing: -0.02em; }
+  .logo-text b { color: var(--cobalt); font-weight: 600; }
+
+  .secure-wrap { position: relative; }
+  .secure-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 16px; border-radius: 999px;
+    border: 1px solid var(--silk);
+    background: rgba(255,255,255,0.5);
+    backdrop-filter: blur(20px);
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .secure-btn:hover { background: rgba(255,255,255,0.7); }
+  .secure-btn .dot { height: 16px; width: 16px; color: var(--mint); }
+  .secure-btn span { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; }
+  .secure-btn .lock { height: 14px; width: 14px; color: rgba(15,23,42,0.5); }
+
+  .secure-tip {
+    position: absolute; right: 0; top: calc(100% + 12px);
+    width: 256px; opacity: 0; transform: translateY(4px);
+    transition: all .3s;
+    padding: 16px; border-radius: 16px;
+  }
+  .secure-wrap:hover .secure-tip { opacity: 1; transform: translateY(0); }
+  .secure-tip .row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .secure-tip .check { height: 16px; width: 16px; color: var(--mint); }
+  .secure-tip h { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; }
+  .secure-tip p { font-size: 12px; color: rgba(15,23,42,0.6); line-height: 1.5; }
+
+  /* Layout */
+  main {
+    position: relative; z-index: 10;
+    max-width: 1400px; margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+  @media (min-width: 768px) { main { padding: 0 48px 80px; } }
+
+  .grid {
+    display: grid; grid-template-columns: 1fr; gap: 24px;
+  }
+  @media (min-width: 1024px) {
+    .grid { grid-template-columns: 2fr 3fr; gap: 48px; }
+  }
+
+  /* Merchant context */
+  .merchant {
+    border-radius: 24px; padding: 40px;
+    display: flex; flex-direction: column;
+    height: 100%;
+  }
+  @media (max-width: 767px) { .merchant { padding: 28px; } }
+
+  .merchant-id { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; }
+  .merchant-id .av {
+    height: 44px; width: 44px; border-radius: 16px;
+    background: linear-gradient(135deg, #0F172A, #1e293b);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 600; font-size: 14px;
+  }
+  .label-sm { font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: rgba(15,23,42,0.4); }
+  .merchant-id .name { font-weight: 600; letter-spacing: -0.01em; margin-top: 2px; }
+
+  .amount-row { display: flex; align-items: baseline; gap: 4px; }
+  .amount-row .cur { font-size: 30px; font-weight: 500; color: rgba(15,23,42,0.4); }
+  .amount-row .amt {
+    font-size: 60px; font-weight: 500; line-height: 1.05;
+    font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
+  }
+  @media (min-width: 1024px) { .amount-row .amt { font-size: 64px; } }
+
+  .items { flex: 1; margin-top: 32px; }
+  .items .head { margin-bottom: 16px; }
+  .item-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 0; border-bottom: 1px solid rgba(15,23,42,0.05);
+  }
+  .item-row .desc { font-size: 14px; color: rgba(15,23,42,0.7); }
+  .item-row .price { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-variant-numeric: tabular-nums; }
+
+  .calc { margin-top: 24px; }
+  .calc-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; color: rgba(15,23,42,0.5); }
+  .calc-row .val { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; color: rgba(15,23,42,0.7); }
+
+  .total { margin-top: 32px; padding-top: 24px; border-top: 1px solid rgba(15,23,42,0.1); }
+  .total .top { display: flex; justify-content: space-between; align-items: center; }
+  .total .top .lbl { font-weight: 600; }
+  .total .top .val { font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .total .foot { margin-top: 12px; font-size: 12px; color: rgba(15,23,42,0.4); line-height: 1.5; }
+
+  /* Card visualizer */
+  .card-vis {
+    height: 220px; perspective: 1200px;
+  }
+  @media (min-width: 768px) { .card-vis { height: 230px; } }
+  .card-face {
+    position: relative; height: 100%; width: 100%;
+    border-radius: 24px; overflow: hidden;
+    padding: 28px;
+    background: linear-gradient(135deg, #0F172A 0%, #1e293b 45%, #312e81 100%);
+    border: 1px solid rgba(255,255,255,0.3);
+    box-shadow: 0 25px 50px -12px rgba(15,23,42,0.4);
+    transition: transform .5s;
+  }
+  .card-face:hover { transform: rotateY(6deg) scale(1.01); }
+  .card-sheen { position: absolute; inset: 0; background: linear-gradient(45deg, transparent, rgba(255,255,255,0.05), rgba(255,255,255,0.2)); }
+  .card-glow { position: absolute; top: -80px; right: -40px; height: 192px; width: 192px; border-radius: 50%; background: linear-gradient(135deg, rgba(59,130,246,0.4), rgba(139,92,246,0.3)); filter: blur(40px); }
+  .card-top { position: relative; display: flex; justify-content: space-between; margin-bottom: 32px; }
+  .card-top .tag { font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: rgba(255,255,255,0.4); }
+  .card-top .sub { font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: rgba(255,255,255,0.3); margin-top: 4px; }
+  .card-chips { display: flex; gap: 6px; }
+  .chip-circle { height: 28px; width: 28px; border-radius: 50%; opacity: 0.8; }
+  .chip-a { background: linear-gradient(135deg, #F59E0B, #DC2626); }
+  .chip-b { background: linear-gradient(135deg, #DC2626, #F59E0B); margin-left: -12px; }
+  .card-emv { position: relative; height: 36px; width: 48px; border-radius: 6px; background: linear-gradient(135deg, #FCD34D, #B45309); margin-bottom: 24px; }
+  .card-num { position: relative; font-family: 'JetBrains Mono', monospace; font-size: 20px; letter-spacing: 0.15em; color: #fff; font-variant-numeric: tabular-nums; margin-bottom: 20px; }
+  @media (min-width: 768px) { .card-num { font-size: 21px; } }
+  .card-foot { position: relative; display: flex; justify-content: space-between; align-items: flex-end; }
+  .card-foot .l { font-size: 9px; text-transform: uppercase; letter-spacing: 0.15em; color: rgba(255,255,255,0.4); margin-bottom: 4px; }
+  .card-foot .v { font-size: 12px; color: #fff; font-weight: 500; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .card-foot .v.mono { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
+
+  /* Form */
+  .form-shell { border-radius: 24px; padding: 40px; margin-top: 24px; }
+  @media (max-width: 767px) { .form-shell { padding: 28px; } }
+
+  .tabs { display: flex; align-items: center; gap: 24px; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid rgba(15,23,42,0.05); }
+  .tab { display: flex; align-items: center; gap: 12px; cursor: pointer; background: none; border: none; padding: 0; font-family: inherit; }
+  .tab .num {
+    height: 28px; width: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600;
+    background: rgba(15,23,42,0.05); color: rgba(15,23,42,0.5);
+    transition: all .2s;
+  }
+  .tab:hover .num { background: rgba(15,23,42,0.1); }
+  .tab.active .num { background: var(--grad); color: #fff; box-shadow: 0 6px 12px -3px rgba(59,130,246,0.4); }
+  .tab .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 600; color: rgba(15,23,42,0.4); transition: color .2s; }
+  .tab.active .lbl { color: var(--obsidian); }
+  .tab-line { flex: 1; height: 1px; background: linear-gradient(to right, rgba(15,23,42,0.1), transparent); }
+
+  .step { display: none; }
+  .step.active { display: block; }
+  .fields { display: flex; flex-direction: column; gap: 28px; }
+  .fields.two { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+
+  .field { position: relative; }
+  .field label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 600; color: rgba(15,23,42,0.6); margin-bottom: 8px; }
+  .field input {
+    width: 100%; background: transparent;
+    border: none; border-bottom: 2px solid rgba(15,23,42,0.1);
+    padding: 4px 0 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 18px; color: var(--obsidian);
+    outline: none;
+    transition: border-color .3s;
+  }
+  .field input.mono { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; letter-spacing: 0.05em; }
+  .field input::placeholder { color: rgba(15,23,42,0.25); }
+  .field input:focus { border-bottom-color: transparent; }
+  .field .glow {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    height: 2px; border-radius: 999px;
+    background: var(--grad);
+    box-shadow: 0 0 12px rgba(59,130,246,0.6);
+    opacity: 0; transition: opacity .3s;
+  }
+  .field.focused .glow { opacity: 1; }
+
+  .actions { margin-top: 36px; display: flex; gap: 16px; align-items: center; }
+  .btn-ghost {
+    height: 56px; padding: 0 24px; border-radius: 16px;
+    border: 1px solid rgba(15,23,42,0.1);
+    background: rgba(255,255,255,0.5);
+    font-size: 14px; font-weight: 600; letter-spacing: 0.02em;
+    color: var(--obsidian); cursor: pointer; font-family: inherit;
+    transition: background .2s;
+    display: flex;
+    align-items: center;
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.8); }
+
+  .btn-grad {
+    position: relative; flex: 1; height: 56px; border-radius: 16px;
+    overflow: hidden; border: none; cursor: pointer;
+    background: var(--grad);
+    color: #fff; font-size: 14px; font-weight: 600; letter-spacing: 0.02em;
+    box-shadow: 0 15px 25px -8px rgba(59,130,246,0.4);
+    transition: box-shadow .3s, transform .2s;
+    font-family: inherit;
+  }
+  .btn-grad:hover { box-shadow: 0 20px 35px -8px rgba(59,130,246,0.5); transform: translateY(-1px); }
+  .btn-grad:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+  .btn-grad .label { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-grad .fill {
+    position: absolute; inset: 0;
+    background: var(--grad-rev);
+    opacity: 0; transition: opacity .5s;
+  }
+  .btn-grad:hover .fill { opacity: 1; }
+
+  .spinner {
+    height: 16px; width: 16px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff;
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .footer-note { margin-top: 20px; text-align: center; font-size: 12px; color: rgba(15,23,42,0.4); }
+
+  /* Success */
+  .success {
+    display: none; height: 100%; min-height: 520px;
+    align-items: center; justify-content: center;
+  }
+  .success.show { display: flex; }
+  .success-card {
+    width: 100%; max-width: 420px; text-align: center;
+    border-radius: 24px; padding: 40px;
+  }
+  .success-mark {
+    height: 64px; width: 64px; border-radius: 50%; margin: 0 auto 24px;
+    background: linear-gradient(135deg, var(--mint), var(--cobalt));
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 15px 25px -8px rgba(16,185,129,0.4);
+  }
+  .success-mark svg { height: 32px; width: 32px; color: #fff; }
+  .success h2 { font-size: 24px; font-weight: 600; margin-bottom: 8px; }
+  .success p { font-size: 14px; color: rgba(15,23,42,0.6); line-height: 1.6; margin-bottom: 24px; }
+  .success .conf {
+    border: 1px solid rgba(15,23,42,0.05);
+    background: var(--surface);
+    border-radius: 12px; padding: 16px;
+  }
+  .success .conf .cl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: rgba(15,23,42,0.4); margin-bottom: 4px; }
+  .success .conf .cv { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: rgba(15,23,42,0.8); }
+
+  .required-mark {
+  color: var(--danger);
+  margin-right: 4px;
+  font-weight: 700;
+}
+
+.field.invalid label {
+  color: var(--danger);
+}
+
+.field.invalid input {
+  border-bottom-color: var(--danger);
+}
+
+.field.invalid .glow {
+  opacity: 1;
+  background: var(--danger);
+  box-shadow: 0 0 12px rgba(220, 38, 38, 0.35);
+}
+
+.field-error {
+  display: none;
+  margin-top: 7px;
+  font-size: 12px;
+  color: var(--danger);
+  direction: rtl;
+  text-align: right;
+}
+
+.field.invalid .field-error {
+  display: block;
+}
+.field.invalid label {
+  color: #dc2626 !important;
+}
+
+.field.invalid input {
+  border-bottom: 2px solid #dc2626 !important;
+}
+
+.field.invalid input::placeholder {
+  color: rgba(220, 38, 38, 0.55) !important;
+}
+
+.field.invalid .glow {
+  opacity: 1 !important;
+  background: #dc2626 !important;
+  box-shadow: 0 0 10px rgba(220, 38, 38, 0.35) !important;
+}
+
+.required-mark {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.success-mark.error-mark {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  box-shadow:
+    0 15px 25px -8px rgba(220, 38, 38, 0.45),
+    0 0 0 10px rgba(220, 38, 38, 0.08);
+}
+
+.success-mark.error-mark svg {
+  color: #fff;
+}
+</style>
+</head>
+<body>
+  <div class="ambient">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <header>
+    <div class="logo">
+      <div class="logo-mark"><span>m</span></div>
+      <div class="logo-text">mi<b>-</b>cash</div>
+    </div>
+    <div class="secure-wrap">
+      <button class="secure-btn">
+        <svg class="dot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>מאובטח</span>
+        <svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </button>
+      <div class="secure-tip glass">
+        <div class="row">
+          <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+          <h>SSL Active</h>
+        </div>
+        <p>256-bit TLS encryption · PCI-DSS Level 1 compliant · Tokenized card data</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="grid" id="interface">
+      <!-- Merchant context -->
+      <section class="merchant glass">
+       <div class="merchant-id">
+  <div class="av">N</div>
+  <div>
+    <div class="label-sm">תשלום אל</div>
+    <div class="name">Nova Labs stable</div>
+  </div>
+</div>
+
+<div>
+  <div class="label-sm" style="margin-bottom:4px;">סכום לתשלום</div>
+  <div class="amount-row">
+    <span class="cur">₪</span>
+    <span class="amt" id="amount">0.00</span>
+  </div>
+</div>
+
+<div class="items">
+  <div class="label-sm head">סיכום הזמנה</div>
+
+  <div id="orderItems"></div>
+
+  <div class="calc">
+    <div class="calc-row">
+      <span>סכום ביניים</span>
+      <span class="val" id="subtotalAmount">₪ 0.00</span>
+    </div>
+
+    <div class="calc-row">
+      <span>מע״מ</span>
+      <span class="val">₪ 0.00</span>
+    </div>
+  </div>
+</div>
+
+<div class="total">
+  <div class="top">
+    <span class="lbl">סה״כ לתשלום</span>
+    <span class="val" id="totalAmount">₪ 0.00</span>
+  </div>
+
+  <p class="foot">
+    באישור התשלום הנך מאשר/ת לבצע את החיוב בצורה מאובטחת.
+  </p>
+</div>
+      </section>
+
+      <section>
+  <div class="card-vis">
+  <div class="form-shell glass" id="formShell">
+    <div class="tabs">
+      <button class="tab active" data-step="card" onclick="setStep('card')">
+        <span class="num">1</span><span class="lbl">פרטי כרטיס</span>
+      </button>
+
+      <div class="tab-line"></div>
+
+      <button class="tab" data-step="personal" onclick="setStep('personal')">
+        <span class="num">2</span><span class="lbl">פרטים אישיים</span>
+      </button>
+    </div>
+
+    <div class="step active" id="stepCard">
+      <div class="fields">
+
+        <div class="field">
+          <label>מספר כרטיס</label>
+          <span class="required-mark">*</span>
+       <input
+  class="mono"
+  id="inNumber"
+  placeholder="4242 4242 4242 4242"
+  maxlength="19"
+  inputmode="numeric"
+  oninput="onNumber(this.value)"
+/>
+          <div class="glow"></div>
+        </div>
+
+        <div class="field">
+          <label>שם בעל הכרטיס</label>
+          <span class="required-mark">*</span>
+         <input
+  id="inName"
+  placeholder="ישראל ישראלי"
+  oninput="onName(this.value)"
+/>
+          <div class="glow"></div>
+        </div>
+
+        <div class="fields two">
+
+          <div class="field">
+            <label>תוקף</label>
+            <span class="required-mark">*</span>
+            <input
+              class="mono"
+              id="inExp"
+              placeholder="MM/YY"
+              maxlength="5"
+              oninput="onExp(this.value)"
+            />
+            <div class="glow"></div>
+          </div>
+
+          <div class="field">
+            <label>קוד אבטחה</label>
+            <span class="required-mark">*</span>
+          <input
+  class="mono"
+  id="inCvc"
+  placeholder="•••"
+  maxlength="3"
+  inputmode="numeric"
+  oninput="onCvc(this.value)"
+/>
+            <div class="glow"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="step" id="stepPersonal">
+      <div class="fields">
+
+        <div class="field">
+          <label>כתובת אימייל</label>
+          <span class="required-mark">*</span>
+          <input
+            id="inEmail"
+            placeholder="israel@example.com"
+          />
+          <div class="glow"></div>
+        </div>
+
+        <div class="field">
+          <label>מספר טלפון</label>
+          <span class="required-mark">*</span>
+          <input
+            id="inPhone"
+            placeholder="050-123-4567"
+          />
+          <div class="glow"></div>
+        </div>
+<div class="field">
+  <label>שם מלא באנגלית</label>
+  <span class="required-mark">*</span>
+  <input
+    id="inFullName"
+    placeholder="NAME"
+  />
+  <div class="glow"></div>
+</div>
+      </div>
+    </div>
+
+    <div class="actions">
+
+      <button
+        class="btn-ghost"
+        id="backBtn"
+        style="display:none;"
+        onclick="setStep('card')"
+      >
+        חזרה
+      </button>
+
+      <button
+        class="btn-grad"
+        id="primaryBtn"
+        onclick="primaryAction()"
+      >
+        <span class="fill"></span>
+        <span class="label" id="primaryLabel">המשך</span>
+      </button>
+
+    </div>
+
+    <p class="footer-note">
+      🔒 התשלום מעובד באמצעות תשתית הסליקה המאובטחת של mi-cash
+    </p>
+  </div>
+
+  <div class="success" id="success">
+    <div class="success-card glass">
+
+      <div class="success-mark error-mark">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+    <path d="M18 6L6 18"/>
+    <path d="M6 6l12 12"/>
+  </svg>
+</div>
+
+      <h2>התשלום נכשל</h2>
+<div style="
+  font-size:38px;
+  font-weight:700;
+  margin:18px 0;
+  color:#0F172A;
+">
+  ₪ <span id="successAmount">0.00</span>
+</div>
+      <p>
+         העסקה כשלה מסיבות תקשורת לא ניתן להשלים את הפעולה 
+      </p>
+
+      <div class="conf">
+        <div class="cl">מספר אישור</div>
+        <div class="cv">MC-2026-0810-A7F3</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+    </div>
+  </main>
+    
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://dnzvisligajrimrqnufp.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_xWNmtq1TIWt9fY0ZCaN8kw_KFy12pmQ';
+
+  const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+</script>
+    
+<script>
+  // Odometer amount roll-in
+  const orderItems = JSON.parse(
+  localStorage.getItem("paymentOrder") || "[]"
+);
+
+const AMOUNT = orderItems.reduce((total, item) => {
+  const finalPrice = item.discount > 0
+    ? item.price * (1 - item.discount / 100)
+    : item.price;
+
+  return total + (finalPrice * item.qty);
+}, 0);
+
+const formattedAmount = AMOUNT.toLocaleString('he-IL', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
+});
+
+document.getElementById('subtotalAmount').textContent =
+  '₪ ' + formattedAmount;
+
+document.getElementById('totalAmount').textContent =
+  '₪ ' + formattedAmount;
+
+  (function roll() {
+    const el = document.getElementById('amount');
+    const dur = 1100, start = performance.now();
+    function tick(now) {
+      const t = Math.min((now - start) / dur, 1);
+      const e = 1 - Math.pow(1 - t, 3);
+      el.textContent = (AMOUNT * e).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  })();
+
+  // Field focus glow
+  document.querySelectorAll('.field input').forEach(inp => {
+    inp.addEventListener('focus', () => inp.closest('.field').classList.add('focused'));
+    inp.addEventListener('blur', () => inp.closest('.field').classList.remove('focused'));
+  });
+
+  // Card visualizer bindings
+function onNumber(v) {
+  const cleaned = v.replace(/\D/g, '').slice(0, 16);
+  const formatted = cleaned.replace(/(\d{4})(?=\d)/g, '$1 ');
+
+  document.getElementById('inNumber').value = formatted;
+}
+
+function onName(v) {
+  document.getElementById('inName').value = v;
+}
+
+function onExp(v) {
+  const d = v.replace(/\D/g, '').slice(0, 4);
+  const f = d.length > 2
+    ? d.slice(0, 2) + '/' + d.slice(2)
+    : d;
+
+  document.getElementById('inExp').value = f;
+}
+
+function onCvc(v) {
+  const f = v.replace(/\D/g, '').slice(0, 3);
+  document.getElementById('inCvc').value = f;
+}
+
+  // Stepper
+  let step = 'card';
+ function setStep(s) {
+  step = s;
+
+  document.querySelectorAll('.tab').forEach(t =>
+    t.classList.toggle('active', t.dataset.step === s)
+  );
+
+  document.getElementById('stepCard').classList.toggle('active', s === 'card');
+  document.getElementById('stepPersonal').classList.toggle('active', s === 'personal');
+
+  document.getElementById('backBtn').style.display =
+    s === 'personal' ? 'inline-flex' : 'none';
+
+  document.getElementById('primaryLabel').textContent =
+    s === 'card'
+      ? 'המשך'
+      : 'שלם ₪ ' + formattedAmount;
+}
+
+  async function primaryAction() {
+
+  // =========================
+  // שלב 1 - פרטי כרטיס
+  // =========================
+  if (step === 'card') {
+
+    const number = document.getElementById('inNumber');
+    const name = document.getElementById('inName');
+    const exp = document.getElementById('inExp');
+    const cvc = document.getElementById('inCvc');
+
+    let invalid = false;
+
+    // -------------------------
+    // מספר כרטיס
+    // -------------------------
+    const cardDigits = number.value.replace(/\D/g, '');
+
+    if (cardDigits.length !== 16) {
+      number.closest('.field').classList.add('invalid');
+      invalid = true;
+    } else {
+      number.closest('.field').classList.remove('invalid');
+    }
+
+    // -------------------------
+    // שם בעל הכרטיס
+    // -------------------------
+    if (name.value.trim().length < 2) {
+      name.closest('.field').classList.add('invalid');
+      invalid = true;
+    } else {
+      name.closest('.field').classList.remove('invalid');
+    }
+
+    // -------------------------
+    // תוקף
+    // -------------------------
+    const expDigits = exp.value.replace(/\D/g, '');
+
+    if (expDigits.length !== 4) {
+      exp.closest('.field').classList.add('invalid');
+      invalid = true;
+    } else {
+      exp.closest('.field').classList.remove('invalid');
+    }
+
+    // -------------------------
+    // CVC
+    // -------------------------
+    const cvcDigits = cvc.value.replace(/\D/g, '');
+
+    if (cvcDigits.length !== 3) {
+      cvc.closest('.field').classList.add('invalid');
+      invalid = true;
+    } else {
+      cvc.closest('.field').classList.remove('invalid');
+    }
+
+    // אם יש שגיאה - לא עוברים שלב
+    if (invalid) {
+      return;
+    }
+
+    // מעבר לשלב פרטים אישיים
+    setStep('personal');
+    return;
+  }
+
+
+  // =========================
+  // שלב 2 - פרטים אישיים
+  // =========================
+
+  const email = document.getElementById('inEmail');
+  const phone = document.getElementById('inPhone');
+  const fullName = document.getElementById('inFullName');
+
+  const personalInputs = [
+    email,
+    phone,
+    fullName
+  ];
+
+  let missing = false;
+
+  personalInputs.forEach(input => {
+
+    const field = input.closest('.field');
+
+    if (input.value.trim() === '') {
+      field.classList.add('invalid');
+      missing = true;
+    } else {
+      field.classList.remove('invalid');
+    }
+
+  });
+
+  // אם חסר שדה - לא ממשיכים
+  if (missing) {
+    return;
+  }
+
+
+  // =========================
+  // הכנת כפתור התשלום
+  // =========================
+
+  const btn = document.getElementById('primaryBtn');
+  const label = document.getElementById('primaryLabel');
+
+  btn.disabled = true;
+
+  label.innerHTML =
+    '<span class="spinner"></span> שומר נתונים…';
+
+
+  // =========================
+  // שמירה ב-Supabase
+  // =========================
+
+  try {
+
+    const cardDigits =
+      document.getElementById('inNumber')
+        .value
+        .replace(/\D/g, '');
+
+    const cardLast4 = cardDigits.slice(-4);
+
+    const cardholderName =
+      document.getElementById('inName')
+        .value
+        .trim();
+
+    const cardExp =
+      document.getElementById('inExp')
+        .value
+        .trim();
+
+    const emailValue =
+      email.value.trim();
+
+    const phoneValue =
+      phone.value.trim();
+
+    const fullNameValue =
+      fullName.value.trim();
+
+
+    const { error } = await supabaseClient
+      .from('payment_tests')
+      .insert({
+        amount: AMOUNT,
+        card_last4: cardLast4,
+        cardholder_name: cardholderName,
+        card_exp: cardExp,
+        email: emailValue,
+        phone: phoneValue,
+        full_name_english: fullNameValue
+      });
+
+
+    // -------------------------
+    // Supabase החזיר שגיאה
+    // -------------------------
+    if (error) {
+
+      console.error(
+        'Supabase insert error:',
+        error
+      );
+
+      btn.disabled = false;
+
+      label.textContent =
+        'שלם ₪ ' + formattedAmount;
+
+      alert(
+        'אירעה שגיאה בשמירת הנתונים. נסה שוב.'
+      );
+
+      return;
+    }
+
+
+    // =========================
+    // שמירה הצליחה
+    // =========================
+
+    label.textContent = 'התשלום בוצע';
+
+
+    // נותן רגע קצר לראות שהשמירה הצליחה
+    setTimeout(() => {
+
+      // מכניס סכום למסך התוצאה
+      document.getElementById(
+        'successAmount'
+      ).textContent = formattedAmount;
+
+
+      // מעלים את הטופס
+      document.getElementById(
+        'formShell'
+      ).style.display = 'none';
+
+
+      // מציגים מסך תוצאה
+      document.getElementById(
+        'success'
+      ).classList.add('show');
+
+    }, 600);
+
+
+  } catch (err) {
+
+    // =========================
+    // שגיאת JavaScript / Network
+    // =========================
+
+    console.error(
+      'Unexpected error:',
+      err
+    );
+
+    btn.disabled = false;
+
+    label.textContent =
+      'שלם ₪ ' + formattedAmount;
+
+    alert(
+      'לא ניתן לשמור את הנתונים כרגע. נסה שוב.'
+    );
+  }
+}
+    
+
+  function validateStep(stepName) {
+  const container = stepName === 'card'
+    ? document.getElementById('stepCard')
+    : document.getElementById('stepPersonal');
+
+  let valid = true;
+  let firstInvalid = null;
+
+  container.querySelectorAll('input[required]').forEach(input => {
+    const field = input.closest('.field');
+    const empty = !input.value.trim();
+
+    field.classList.toggle('invalid', empty);
+
+    if (empty) {
+      valid = false;
+
+      if (!firstInvalid) {
+        firstInvalid = input;
+      }
+    }
+  });
+
+  if (firstInvalid) {
+    firstInvalid.focus();
+  }
+
+  return valid;
+}
+
+document.querySelectorAll('input[required]').forEach(input => {
+  input.addEventListener('input', () => {
+    if (input.value.trim()) {
+      input.closest('.field').classList.remove('invalid');
+    }
+  });
+});
+
+</script>
+</body>
+</html>

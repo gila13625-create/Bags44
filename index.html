@@ -1,0 +1,1094 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>מאזון סובראן — אטלייה יוקרה לתיקים</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@300;400;500;700&family=Heebo:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FBFAF6; --ink:#1A1817; --cream:#EDE9DF; --muted:#7A7165;
+    --accent:#8C6D52; --line:#D9D3C5; --gold:#A8845C;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:"Heebo",sans-serif; font-weight:300;
+    -webkit-font-smoothing:antialiased; line-height:1.7;
+  }
+  h1,h2,h3,.serif{font-family:"Frank Ruhl Libre",serif;font-weight:400;}
+  a{color:inherit;text-decoration:none;}
+  img{display:block;width:100%;height:100%;object-fit:cover;}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 22px;}
+  .luxe{letter-spacing:.22em;font-size:11px;}
+  .upper{text-transform:uppercase;}
+
+  /* TOP BAR */
+  .topbar{background:var(--ink);color:var(--bg);text-align:center;font-size:11px;letter-spacing:.2em;padding:8px 0;}
+  /* NAV */
+  header.nav{position:sticky;top:0;z-index:40;background:rgba(251,250,246,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  .nav-inner{height:72px;display:flex;align-items:center;justify-content:space-between;max-width:1200px;margin:0 auto;padding:0 22px;}
+  .nav-links{display:none;gap:34px;list-style:none;}
+  @media(min-width:768px){.nav-links{display:flex;}}
+  .nav-links a{font-size:12px;letter-spacing:.06em;transition:color .3s;}
+  .nav-links a:hover{color:var(--accent);}
+  .brand{font-family:"Frank Ruhl Libre",serif;font-size:26px;letter-spacing:.04em;}
+  .brand span{color:var(--gold);}
+  .nav-right{display:flex;align-items:center;gap:18px;}
+  .cart-btn{background:none;border:none;cursor:pointer;color:inherit;display:flex;align-items:center;gap:7px;}
+  .cart-btn .lbl{display:none;font-size:11px;letter-spacing:.12em;}
+  @media(min-width:768px){.cart-btn .lbl{display:inline;}}
+  .cart-count{color:var(--accent);font-variant-numeric:tabular-nums;font-size:12px;}
+  .burger{display:block;background:none;border:none;cursor:pointer;padding:4px;color:var(--ink);}
+  @media(min-width:768px){.burger{display:none;}}
+  .mobile-menu{display:none;border-top:1px solid var(--line);padding:14px 22px;}
+  .mobile-menu.open{display:block;}
+  .mobile-menu a{display:block;padding:8px 0;font-size:13px;letter-spacing:.04em;}
+
+  /* BANNER */
+  .banner{text-align:center;padding:46px 0 14px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,var(--cream) 0%,var(--bg) 100%);}
+  .banner .tag{font-size:11px;letter-spacing:.32em;color:var(--muted);margin-bottom:14px;}
+  .banner h1{font-size:30px;font-weight:300;letter-spacing:.02em;}
+  @media(min-width:768px){.banner h1{font-size:44px;}}
+  .banner h1 em{color:var(--accent);font-style:normal;}
+  .banner .sub{margin-top:14px;font-size:14px;color:var(--muted);max-width:560px;margin-left:auto;margin-right:auto;line-height:1.7;padding:0 22px;}
+  .banner .orn{margin-top:16px;color:var(--gold);letter-spacing:.4em;font-size:12px;}
+
+  /* COLLECTION HEAD */
+  .coll{padding:46px 0 80px;}
+  .coll-head{text-align:center;margin-bottom:34px;}
+  .coll-head .k{font-size:11px;letter-spacing:.32em;color:var(--muted);margin-bottom:10px;}
+  .coll-head h2{font-size:28px;font-weight:400;}
+  @media(min-width:768px){.coll-head h2{font-size:38px;}}
+
+  /* GRID — 2 per row */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:24px 18px;}
+  @media(min-width:768px){.grid{gap:44px 30px;}}
+  .pcard{cursor:pointer;display:block;}
+  .img-wrap{position:relative;overflow:hidden;background:var(--cream);aspect-ratio:4/5;}
+  .img-wrap img{transition:transform 1.2s ease;}
+  .pcard:hover .img-wrap img{transform:scale(1.05);}
+  .badge{position:absolute;top:12px;right:12px;background:rgba(251,250,246,.92);backdrop-filter:blur(4px);color:var(--accent);font-size:10px;letter-spacing:.12em;padding:5px 11px;}
+  .add-btn{position:absolute;bottom:12px;right:12px;left:12px;background:rgba(251,250,246,.95);backdrop-filter:blur(4px);color:var(--ink);padding:11px;font-size:11px;letter-spacing:.12em;border:none;cursor:pointer;opacity:0;transform:translateY(6px);transition:all .45s;}
+  @media(hover:hover){.pcard:hover .add-btn{opacity:1;transform:translateY(0);}}
+  @media(hover:none){.add-btn{opacity:1;transform:none;}}
+  .add-btn:hover{background:var(--ink);color:var(--bg);}
+  .meta{padding-top:13px;}
+  .meta .cat{font-size:10px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;}
+  .meta .name{font-family:"Frank Ruhl Libre",serif;font-size:18px;line-height:1.2;margin-top:3px;}
+  @media(min-width:768px){.meta .name{font-size:21px;}}
+  .price-row{margin-top:8px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+  .cur{font-family:"Frank Ruhl Libre",serif;font-size:18px;font-weight:500;}
+  .cur.sale{color:var(--accent);}
+  .orig{font-size:13px;color:var(--muted);text-decoration:line-through;}
+  .stock{margin-top:6px;font-size:10px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;}
+  .stock.low{color:var(--accent);}
+
+  /* FOOTER */
+  footer{border-top:1px solid var(--line);padding:50px 0 26px;}
+  .foot-grid{display:grid;gap:30px;text-align:center;}
+  @media(min-width:768px){.foot-grid{grid-template-columns:2fr 1fr 1fr;text-align:right;}}
+  .foot-brand{font-family:"Frank Ruhl Libre",serif;font-size:24px;}
+  .foot-brand span{color:var(--gold);}
+  .foot-desc{margin-top:12px;font-size:13px;color:var(--muted);max-width:340px;line-height:1.7;}
+  @media(min-width:768px){.foot-desc{margin-right:0;margin-left:auto;}}
+  .foot-col-h{font-size:11px;letter-spacing:.18em;color:var(--muted);margin-bottom:12px;text-transform:uppercase;}
+  .foot-list{list-style:none;}
+  .foot-list li{margin-bottom:7px;font-size:13px;}
+  .foot-list a:hover{color:var(--accent);}
+  .foot-bottom{border-top:1px solid var(--line);margin-top:28px;padding-top:18px;text-align:center;font-size:11px;color:var(--muted);letter-spacing:.04em;}
+
+  /* DETAIL PAGE */
+  .detail{display:none;padding:34px 0 64px;}
+  .back{display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.1em;color:var(--muted);background:none;border:none;cursor:pointer;margin-bottom:30px;font-family:inherit;}
+  .back:hover{color:var(--ink);}
+  .detail-grid{display:grid;gap:30px;}
+  @media(min-width:768px){.detail-grid{grid-template-columns:1fr 1fr;gap:50px;align-items:start;}}
+  .detail-img .frame{aspect-ratio:4/5;overflow:hidden;background:var(--cream);}
+  @media(min-width:768px){.detail-img{position:sticky;top:90px;}}
+  .detail-data{max-width:480px;}
+  .d-cat{font-size:11px;letter-spacing:.2em;color:var(--muted);margin-bottom:14px;text-transform:uppercase;}
+  .detail-data h1{font-size:30px;font-weight:400;line-height:1.1;}
+  @media(min-width:768px){.detail-data h1{font-size:48px;}}
+  .pblock{margin-top:26px;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;}
+  .pblock .cur{font-size:30px;color:var(--accent);font-weight:500;}
+  .pblock .orig{font-size:18px;color:var(--muted);text-decoration:line-through;}
+  .invite{margin-top:22px;border-right:2px solid var(--accent);padding:6px 18px 6px 0;}
+  .invite .k{font-size:11px;letter-spacing:.12em;color:var(--accent);}
+  .invite p{margin-top:5px;font-size:14px;color:var(--muted);line-height:1.7;}
+  .invite b{color:var(--ink);font-weight:400;}
+  .desc{margin-top:34px;padding-top:30px;border-top:1px solid var(--line);}
+  .desc .k{font-size:11px;letter-spacing:.12em;color:var(--muted);margin-bottom:14px;text-transform:uppercase;}
+  .desc p{font-size:15px;line-height:1.8;color:rgba(26,24,23,.92);white-space:pre-line;}
+  .stock-block{margin-top:32px;}
+  .stock-row{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;}
+  .stock-bar{height:2px;background:var(--line);position:relative;overflow:hidden;}
+  .stock-fill{position:absolute;top:0;right:0;height:100%;background:var(--ink);transition:width .7s;}
+  .stock-fill.low{background:var(--accent);}
+  .stock-note{margin-top:10px;font-size:12px;color:var(--muted);}
+  .buy-row{margin-top:34px;display:flex;gap:14px;flex-direction:column;}
+  @media(min-width:640px){.buy-row{flex-direction:row;}}
+  .qty{display:flex;align-items:center;border:1px solid var(--line);flex-shrink:0;}
+  .qty button{padding:14px;background:none;border:none;cursor:pointer;color:var(--ink);}
+  .qty button:hover{background:var(--cream);}
+  .qty span{padding:0 20px;font-variant-numeric:tabular-nums;font-size:14px;}
+  .acquire{flex:1;background:var(--ink);color:var(--bg);padding:15px;font-size:12px;letter-spacing:.14em;border:none;cursor:pointer;transition:background .3s;font-family:inherit;}
+  .acquire:hover{background:var(--accent);}
+  .acquire:disabled{opacity:.4;cursor:not-allowed;}
+  .note{margin-top:22px;font-size:12px;color:var(--muted);line-height:1.7;}
+
+  /* DRAWER */
+  .overlay{position:fixed;inset:0;z-index:50;background:rgba(26,24,23,.32);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .45s;}
+  .overlay.open{opacity:1;pointer-events:auto;}
+  .drawer{position:fixed;top:0;left:0;height:100%;width:100%;max-width:430px;background:var(--bg);box-shadow:10px 0 40px rgba(0,0,0,.2);transform:translateX(-100%);transition:transform .5s ease;display:flex;flex-direction:column;z-index:50;}
+  .drawer.open{transform:translateX(0);}
+  .drawer-head{display:flex;align-items:center;justify-content:space-between;padding:22px 26px;border-bottom:1px solid var(--line);}
+  .drawer-head h2{font-family:"Frank Ruhl Libre",serif;font-size:23px;}
+  .close-x{background:none;border:none;cursor:pointer;padding:4px;color:var(--ink);}
+  .close-x:hover{color:var(--accent);}
+  .drawer-body{flex:1;overflow-y:auto;padding:24px 26px;}
+  .empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:11px;}
+  .empty h3{font-family:"Frank Ruhl Libre",serif;font-size:23px;color:var(--muted);}
+  .empty p{font-size:13px;color:var(--muted);}
+  .empty button{margin-top:14px;font-size:11px;letter-spacing:.1em;border-bottom:1px solid var(--ink);padding-bottom:3px;background:none;cursor:pointer;}
+  .empty button:hover{color:var(--accent);}
+  .ci{display:flex;gap:16px;margin-bottom:26px;}
+  .ci .thumb{width:88px;height:110px;flex-shrink:0;overflow:hidden;background:var(--cream);}
+  .ci .info{flex:1;display:flex;flex-direction:column;justify-content:space-between;min-width:0;}
+  .ci .info h3{font-family:"Frank Ruhl Libre",serif;font-size:17px;line-height:1.2;}
+  .ci .info .cat{font-size:11px;color:var(--muted);margin-top:3px;}
+  .ci .pl{margin-top:7px;display:flex;align-items:baseline;gap:7px;font-size:13px;}
+  .ci .pl s{font-size:11px;color:var(--muted);}
+  .ci .ctrl{display:flex;align-items:center;justify-content:space-between;}
+  .qmini{display:flex;align-items:center;border:1px solid var(--line);}
+  .qmini button{padding:6px 9px;background:none;border:none;cursor:pointer;color:var(--ink);}
+  .qmini span{padding:0 11px;font-size:13px;font-variant-numeric:tabular-nums;}
+  .rm{background:none;border:none;cursor:pointer;color:var(--muted);}
+  .rm:hover{color:var(--ink);}
+  .drawer-foot{border-top:1px solid var(--line);padding:22px 26px;}
+  .sav-line{display:flex;justify-content:space-between;font-size:13px;}
+  .sav-line .v{color:var(--accent);}
+  .sub-line{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px;}
+  .sub-line .k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;}
+  .sub-line .v{font-family:"Frank Ruhl Libre",serif;font-size:23px;}
+  .checkout{width:100%;background:var(--ink);color:var(--bg);padding:15px;font-size:12px;letter-spacing:.14em;border:none;cursor:pointer;margin-top:16px;transition:background .3s;font-family:inherit;}
+  .checkout:hover{background:var(--accent);}
+  .del-note{text-align:center;font-size:11px;color:var(--muted);margin-top:14px;}
+
+  #productAdmin input,
+#productAdmin textarea{
+  width:100%;
+  padding:14px 16px;
+  border:1px solid var(--line);
+  background:white;
+  color:var(--ink);
+  font-family:"Heebo",sans-serif;
+  font-size:14px;
+  outline:none;
+}
+
+#productAdmin input:focus,
+#productAdmin textarea:focus{
+  border-color:var(--accent);
+}
+
+#productAdmin textarea{
+  resize:vertical;
+}
+
+/* דף מוצר — טלפון בלבד */
+@media (max-width: 767px) {
+
+  .detail {
+    padding: 20px 16px 50px;
+  }
+
+  .detail-grid {
+    display: block;
+  }
+
+  .detail-img {
+    width: 100%;
+    margin-bottom: 24px;
+  }
+
+  .detail-img .frame {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+  }
+
+  .detail-data {
+    width: 100%;
+    max-width: none;
+  }
+
+  .detail-data h1 {
+    font-size: 30px;
+  }
+
+  .pblock {
+    margin-top: 18px;
+  }
+
+}
+
+.success {
+  display: none;
+  width: 100%;
+  min-height: 500px;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 0;
+}
+
+.success.show {
+  display: flex;
+}
+
+.payment-success-banner {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  padding: 48px 42px 34px;
+  text-align: center;
+
+  background:
+    radial-gradient(circle at top, rgba(16,185,129,.12), transparent 45%),
+    rgba(255,255,255,.75);
+
+  border: 1px solid rgba(255,255,255,.8);
+  border-radius: 28px;
+
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+
+  box-shadow:
+    0 30px 70px rgba(15,23,42,.12),
+    inset 0 1px 0 rgba(255,255,255,.8);
+
+  animation: successIn .55s cubic-bezier(.2,.8,.2,1);
+}
+
+@keyframes successIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.success-icon {
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 22px;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(135deg, #10B981, #3B82F6);
+
+  box-shadow:
+    0 15px 30px rgba(16,185,129,.25),
+    0 0 0 10px rgba(16,185,129,.07);
+}
+
+.success-icon svg {
+  width: 36px;
+  height: 36px;
+  color: white;
+}
+
+.success-small {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  color: #10B981;
+  margin-bottom: 8px;
+}
+
+.payment-success-banner h2 {
+  font-size: 28px;
+  color: #0F172A;
+  margin-bottom: 15px;
+}
+
+.success-amount {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 42px;
+  font-weight: 600;
+  color: #0F172A;
+  margin-bottom: 20px;
+}
+
+.success-text {
+  color: rgba(15,23,42,.55);
+  font-size: 14px;
+  line-height: 1.8;
+  margin-bottom: 30px;
+}
+
+.success-details {
+  background: rgba(247,249,252,.8);
+  border: 1px solid rgba(15,23,42,.06);
+  border-radius: 18px;
+  padding: 6px 20px;
+}
+
+.success-detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 15px 0;
+
+  font-size: 13px;
+
+  border-bottom: 1px solid rgba(15,23,42,.06);
+}
+
+.success-detail:last-child {
+  border-bottom: none;
+}
+
+.success-detail span {
+  color: rgba(15,23,42,.5);
+}
+
+.success-detail strong {
+  color: #0F172A;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.success-detail .approved {
+  color: #10B981;
+  font-family: inherit;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.approved i {
+  display: block;
+
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: #10B981;
+
+  box-shadow: 0 0 0 4px rgba(16,185,129,.12);
+}
+
+.success-secure {
+  margin-top: 22px;
+
+  font-size: 11px;
+
+  color: rgba(15,23,42,.38);
+}
+</style>
+</head>
+<body>
+
+<div class="topbar" id="secretAdminTrigger">משלוח חינם לכל העולם • אספקה ב-3 עד 5 ימי עסקים</div>
+<!-- NAV -->
+<header class="nav">
+  <div class="nav-inner">
+    <button class="burger" id="burgerBtn" aria-label="תפריט">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <ul class="nav-links">
+      <li><a href="#" onclick="goHome(event)">אטלייה</a></li>
+      <li><a href="#collection">הקולקציה</a></li>
+      <li><a href="#footer">על המותג</a></li>
+    </ul>
+    <a href="#" class="brand" onclick="goHome(event)">מאזון <span>סובראן</span></a>
+    <div class="nav-right">
+      <button class="cart-btn" id="cartBtn">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="lbl">סל</span>
+        <span class="cart-count" id="cartCount"></span>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#collection">הקולקציה</a>
+    <a href="#footer">על המותג</a>
+  </div>
+</header>
+
+<!-- BANNER (slim, no big image) -->
+<section class="banner">
+  <p class="tag">אוסף סתיו — MMXXVI</p>
+  <h1>צורה <em>ביראת כבוד</em></h1>
+  <p class="sub">אטלייה  לתיקים יוקרתיים — כל פריט נבחר בקפידה בשל יושרו החומרי. מחירי סיטונאות, עור כפיסות, חומרה כארכיטקטורה. ללא עודפים, ללא פשרות — רק מה שראוי למקומו.</p>
+  <div class="orn">· · ·</div>
+</section>
+
+<!-- COLLECTION -->
+<section class="coll" id="collection">
+  <div class="wrap">
+    <div class="coll-head">
+      <p class="k">הקולקציה</p>
+      <h2>עצמים של תשוקה</h2>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <p class="foot-brand">מאזון <span>סובראן</span></p>
+        <p class="foot-desc">אטלייה  המתייחס לכל פריט כיצירת מופת של צורה וחומר. מההערכה לרכישה — מעבר חלק ובלתי נמנע.</p>
+      </div>
+      <div>
+        <p class="foot-col-h">המאזון</p>
+        <ul class="foot-list">
+          <li><a href="#collection">הקולקציה</a></li>
+          <li><a href="#footer">על המותג</a></li>
+          <li><a href="mailto:hello@maison-sovrane.com">צור קשר</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot-col-h">שירות לקוחות</p>
+        <ul class="foot-list">
+          <li style="color:var(--muted)">משלוח חינם לכל העולם</li>
+          <li style="color:var(--muted)">החזרה מתחשבת עד 14 יום</li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">© MMXXVI מאזון סובראן. כל הזכויות שמורות · הוכן כהדגמת </div>
+  </div>
+</footer>
+
+<!-- DETAIL PAGE -->
+<div id="detailPage" class="detail wrap" style="display:none">
+  <button class="back" onclick="goHome(event)">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="12 19 5 12 12 5"/><line x1="19" y1="12" x2="5" y2="12"/></svg>
+    חזרה לקולקציה
+  </button>
+  <div class="detail-grid">
+    <div class="detail-img"><div class="frame"><img id="dImg" src="" alt=""></div></div>
+    <div class="detail-data">
+      <p class="d-cat" id="dCat"></p>
+      <h1 id="dName"></h1>
+      <div class="pblock">
+        <span class="cur" id="dCur"></span>
+        <span class="orig" id="dOrig"></span>
+      </div>
+      <div class="invite" id="dInvite"></div>
+      <div class="desc">
+        <p class="k">מקור והשראה</p>
+        <p id="dDesc"></p>
+      </div>
+      <div class="stock-block">
+        <div class="stock-row">
+          <span style="color:var(--muted)">זמינות מהדורה</span>
+          <span id="dStockLbl"></span>
+        </div>
+        <div class="stock-bar"><div class="stock-fill" id="dStockFill"></div></div>
+        <p class="stock-note" id="dStockNote"></p>
+      </div>
+      <div class="buy-row">
+        <div class="qty">
+          <button id="qtyDec" aria-label="הפחת"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          <span id="dQty">1</span>
+          <button id="qtyInc" aria-label="הוסף"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        </div>
+        <button class="acquire" id="acquireBtn">הוסף לאוסף</button>
+      </div>
+      <p class="note">משלוח חינם לכל העולם. כל מהדורה מגיעה ארוזה בכוונה, עם תעודת מקור.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CART DRAWER -->
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h2>האוסף שלך</h2>
+    <button class="close-x" id="drawerClose" aria-label="סגור">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-foot" id="drawerFoot" style="display:none">
+    <div class="sav-line" id="savLine"><span style="color:var(--muted)">חיסכון על הקולקציה</span><span class="v" id="savings"></span></div>
+    <div class="sub-line"><span class="k">סה"כ</span><span class="v" id="subtotal"></span></div>
+<button class="checkout" onclick="goToPayment()">שלם עכשיו</button>    <p class="del-note">משלוח חינם לכל העולם והחזרות חינם</p>
+  </div>
+</aside>
+
+
+<!-- SECRET PRODUCT ADMIN -->
+<div id="productAdmin" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  background:#FBFAF6;
+  overflow-y:auto;
+  padding:40px 20px;
+">
+  <div style="max-width:600px;margin:auto;">
+    
+    <button onclick="closeProductAdmin()" style="
+      background:none;
+      border:none;
+      cursor:pointer;
+      font-family:inherit;
+      margin-bottom:30px;
+      font-size:14px;
+    ">← חזרה לאתר</button>
+
+    <h2 style="
+      font-family:'Frank Ruhl Libre',serif;
+      font-size:36px;
+      margin-bottom:30px;
+    ">הוספת מוצר</h2>
+
+    <div style="display:grid;gap:18px;">
+
+      <input id="newName" placeholder="שם המוצר">
+
+      <input id="newCategory" placeholder="קטגוריה">
+
+      <input id="newPrice" type="number" placeholder="מחיר">
+
+      <input id="newStock" type="number" placeholder="כמות במלאי">
+
+<label style="font-size:13px;color:var(--muted);">
+  תמונות המוצר — עד 3 תמונות
+</label>
+
+<input
+  id="newImageFile"
+  type="file"
+  accept="image/*"
+  multiple
+  onchange="previewProductImages(event)"
+>
+
+<div id="newImagesPreview" style="
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:8px;
+"></div>
+
+      <textarea id="newDesc" placeholder="תיאור המוצר" rows="6"></textarea>
+
+      <button onclick="createProduct()" style="
+        background:#1A1817;
+        color:#FBFAF6;
+        border:none;
+        padding:16px;
+        cursor:pointer;
+        font-family:inherit;
+        font-size:14px;
+      ">הוסף מוצר לאתר</button>
+
+    </div>
+  </div>
+</div>
+
+
+<div class="success" id="success">
+
+  <div class="payment-success-banner">
+
+    <div class="success-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M20 6 9 17l-5-5"/>
+      </svg>
+    </div>
+
+    <div class="success-small">התשלום הושלם</div>
+
+    <h2>התשלום בוצע בהצלחה!</h2>
+
+    <div class="success-amount">
+      ₪ <span id="successAmount">0.00</span>
+    </div>
+
+    <p class="success-text">
+      העסקה אושרה והתשלום התקבל בהצלחה.
+      <br>
+      אישור התשלום נשלח אליך.
+    </p>
+
+    <div class="success-details">
+
+      <div class="success-detail">
+        <span>סטטוס</span>
+        <strong class="approved">
+          <i></i>
+          אושר
+        </strong>
+      </div>
+
+      <div class="success-detail">
+        <span>מספר אישור</span>
+        <strong id="confirmationNumber">MC-2026-0810-A7F3</strong>
+      </div>
+
+    </div>
+
+    <div class="success-secure">
+      🔒 התשלום בוצע בצורה מאובטחת
+    </div>
+
+  </div>
+
+</div>
+<script>
+    // ===== 20 מוצרים חדשים =====
+// המחירים מפוזרים בכוונה ולא מסודרים לפי קבוצות מחיר.
+
+const NEW_PRODUCTS = [
+  {
+    id: "luna",
+    name: "לונה",
+    desc: "תיק צד קומפקטי בעיצוב נקי ונוח לשימוש יומיומי.",
+    price: 79.90,
+    stock: 12,
+    image: "https://media.base44.com/images/public/6a7a1b1e46647a777e0e2c5c/b6e7a8fd0_generated_image.png",
+    images: [
+      "https://media.base44.com/images/public/6a7a1b1e46647a777e0e2c5c/b6e7a8fd0_generated_image.png",
+      "https://media.base44.com/images/public/6a7a1b1e46647a777e0e2c5c/6721cc5fa_generated_image.png"
+    ],
+    category: "תיק צד",
+    discount: 0,
+    curated: false
+  },
+
+  {
+    id: "velora",
+    name: "ולורה",
+    desc: "תיק כתף אלגנטי בעל קווים רכים וחלוקה פנימית נוחה.",
+    price: 229.90,
+    stock: 8,
+    image: "https://media.base44.com/images/public/6a7a1b1e46647a777e0e2c5c/08b65318d_generated_image.png",
+    images: [
+      "https://media.base44.com/images/public/6a7a1b1e46647a777e0e2c5c/08b65318d_generated_image.png",
+      "https://media.base44.com/images/public/6a7a1b1e46647a777e0e2c5c/d0c49acd0_generated_image.png"
+    ],
+    category: "תיק כתף",
+    discount: 0,
+    curated: false
+  },
+
+  {
+    id: "monaco",
+    name: "מונקו",
+    desc: "תיק מובנה במראה יוקרתי עם פרטים מוקפדים וגימור אלגנטי.",
+    price: 389.90,
+    stock: 5,
+    image: "https://media.base44.com/images/public/6a7a1b1e46647a777e0e2c5c/1dfe16b49_generated_image.png",
+    images: [
+      "https://media.base44.com/images/public/6a7a1b1e46647a777e0e2c5c/1dfe16b49_generated_image.png",
+      "https://media.base44.com/images/public/6a7a1b1e46647a777e0e2c5c/9fbb618d4_generated_image.png"
+    ],
+    category: "תיק יד",
+    discount: 0,
+    curated: false
+  },
+
+  {
+    id: "mila",
+    name: "מילה",
+    desc: "תיק קטן וקליל שמתאים ליציאה קצרה ולשימוש יומיומי.",
+    price: 69.90,
+    stock: 15,
+    image: "https://media.base44.com/images/public/6a7a1b1e46647a777e0e2c5c/47fd2aea1_generated_image.png",
+    images: [
+      "https://media.base44.com/images/public/6a7a1b1e46647a777e0e2c5c/47fd2aea1_generated_image.png",
+      "https://media.base44.com/images/public/6a7a1b1e46647a777e0e2c5c/97b0282cc_generated_image.png"
+    ],
+    category: "תיק מיני",
+    discount: 0,
+    curated: false
+  },
+
+  {
+    id: "aria",
+    name: "אריה",
+    desc: "תיק נשיאה מודרני עם תא מרכזי מרווח ועיצוב מינימליסטי.",
+    price: 199.90,
+    stock: 9,
+    image: "https://media.base44.com/images/public/6a7a1b1e46647a777e0e2c5c/d27245be8_generated_image.png",
+    images: [
+      "https://media.base44.com/images/public/6a7a1b1e46647a777e0e2c5c/d27245be8_generated_image.png",
+      "https://media.base44.com/images/public/6a7a1b1e46647a777e0e2c5c/dbe7b3805_generated_image.png"
+    ],
+    category: "תיק נשיאה",
+    discount: 0,
+    curated: false
+  },
+
+  {
+    id: "royale",
+    name: "רויאל",
+    desc: "תיק פרימיום מובנה עם נוכחות חזקה וגימור מוקפד.",
+    price: 549.90,
+    stock: 3,
+    image: "https://media.base44.com/images/public/6a7a1b1e46647a777e0e2c5c/18de6d490_generated_image.png",
+    images: [
+      "https://media.base44.com/images/public/6a7a1b1e46647a777e0e2c5c/18de6d490_generated_image.png",
+      "https://media.base44.com/images/public/6a7a1b1e46647a777e0e2c5c/185a7ca82_generated_image.png"
+    ],
+    category: "מהדורת פרימיום",
+    discount: 0,
+    curated: true
+  }
+];
+
+const PRODUCTS = [
+  {id:"astrid",name:"אסטריד",desc:"תיק נשיאה מובנה מעור גרגיר-אגס בגוון קוניאק, לנשיאה ביד אבל במרפק. פנים נדיב, סגירה מגנטית וחומרה מכסף מושחז בעבודת יד. בן לוויה יומיומי עם נוכחות של פריט חגיגי.",price:290,stock:6,image:"https://media.base44.com/images/public/6a7a0413349af095e3d2d16f/884a95007_generated_c0ca4d60.png",category:"תיק נשיאה",discount:20,curated:true},
+  {id:"noir",name:"נואר",desc:"תיק ערב מעור אובסידיאן עם אבזם ברונזה מושחז. צר, החלטי, שאינו מתרגש ממגמות. נועד לשעה שאחרי דמדומי הערב.",price:160,stock:3,image:"https://media.base44.com/images/public/6a7a0413349af095e3d2d16f/6ac83c096_generated_eae94758.png",category:"תיק ערב",discount:15,curated:false},
+  {id:"sage",name:"סייג'",desc:"תיק כתף מדם ירוק מושתק, תלוי משרשרת זהב מעובדת בעבודת יד. רך למגע, ארכיטקטוני בקו. לנשיאה קרובה, בביטחון שקט.",price:280,stock:5,image:"https://media.base44.com/images/public/6a7a0413349af095e3d2d16f/3ee312099_generated_35fe6848.png",category:"תיק כתף",discount:0,curated:false},
+  {id:"mara",name:"מארה",desc:"תיק צד בגוון ורוד-בהמה בעור שזור ידנית ואבזם כסף. נוחות חופשית-ידיים, כוונה מפוסלת. פריט שמרוויח את הבלאי שלו.",price:120,stock:8,image:"https://media.base44.com/images/public/6a7a0413349af095e3d2d16f/a6dc02f39_generated_88bf6dd9.png",category:"קרוסבודי",discount:25,curated:false},
+  {id:"oxblood",name:"אוקסבלוד",desc:"תיק מיני מובנה מעור אוקסבלוד עמוק עם חומרת זהב עתיקה. קומפקטי, טקסי, בטוח בעצמו. אובייקט של ערב שלם.",price:240,stock:4,image:"https://media.base44.com/images/public/6a7a0413349af095e3d2d16f/a8c5b1b81_generated_e5258f11.png",category:"תיק מיני",discount:30,curated:false},
+  {id:"sovrane",name:"סובראן",desc:"תיק גב גדול מעור אפור-טאופ רך עם ידיות סיינה מושחזות. מחויך ליום הארוך ולמסע הארוך יותר. חומרה מיושנת לחמימות שקטה.",price:360,stock:2,image:"https://media.base44.com/images/public/6a7a0413349af095e3d2d16f/af2448505_generated_7564115c.png",category:"תיק גב",discount:18,curated:false}
+];
+
+// התמונות האמיתיות שכבר קיימות במוצרים המקוריים
+const EXISTING_IMAGES = PRODUCTS.map(product => product.image);
+
+// נותן לכל מוצר חדש תמונות אקראיות מתוך התמונות שכבר קיימות באתר
+NEW_PRODUCTS.forEach(product => {
+
+  const firstImage =
+    EXISTING_IMAGES[Math.floor(Math.random() * EXISTING_IMAGES.length)];
+
+  let secondImage =
+    EXISTING_IMAGES[Math.floor(Math.random() * EXISTING_IMAGES.length)];
+
+  // משתדל שהתמונה השנייה תהיה שונה מהראשונה
+  if (EXISTING_IMAGES.length > 1) {
+    while (secondImage === firstImage) {
+      secondImage =
+        EXISTING_IMAGES[Math.floor(Math.random() * EXISTING_IMAGES.length)];
+    }
+  }
+
+  product.image = firstImage;
+
+  product.images = [
+    firstImage,
+    secondImage
+  ];
+});
+
+PRODUCTS.push(...NEW_PRODUCTS);
+
+
+let cart=[],currentQty=1,currentProduct=null;
+const $=id=>document.getElementById(id);
+const money=n=>n.toLocaleString("he-IL")+" ₪";
+const curPrice=p=>p.discount>0?p.price*(1-p.discount/100):p.price;
+
+function renderGrid(){
+  const g=$("grid"); g.innerHTML="";
+  PRODUCTS.forEach(p=>{
+    const low=p.stock<=4;
+    const card=document.createElement("a");
+    card.className="pcard"; card.href="#"; card.onclick=e=>{e.preventDefault();openDetail(p);};
+    card.innerHTML=`
+      <div class="img-wrap">
+        <img src="${p.image}" alt="${p.name}">
+        ${p.discount>0?`<span class="badge">הנחה ${p.discount}%</span>`:""}
+        <button class="add-btn" onclick="event.stopPropagation();event.preventDefault();addToCart('${p.id}',1);">הוסף לאוסף</button>
+      </div>
+      <div class="meta">
+        <p class="cat">${p.category}</p>
+        <p class="name">${p.name}</p>
+        <div class="price-row">
+          ${p.discount>0?`<span class="cur sale">${money(curPrice(p))}</span><span class="orig">${money(p.price)}</span>`:`<span class="cur">${money(p.price)}</span>`}
+        </div>
+        <div class="stock ${low?"low":""}">${low?`נותרו ${String(p.stock).padStart(2,"0")} מהדורות`:"במלאי האטלייה"}</div>
+      </div>`;
+    g.appendChild(card);
+  });
+}
+
+function openDetail(p){
+  currentProduct=p; currentQty=1;
+  document.getElementById("homeWrap").style.display="none";
+  $("detailPage").style.display="block";
+  window.scrollTo(0,0);
+  $("dImg").src=p.image; $("dImg").alt=p.name;
+  $("dCat").textContent=p.category; $("dName").textContent=p.name;
+  $("dCur").textContent=money(curPrice(p));
+  if(p.discount>0){$("dOrig").textContent=money(p.price);$("dOrig").style.display="inline";}else{$("dOrig").style.display="none";}
+  const inv=$("dInvite");
+  if(p.discount>0){inv.style.display="block";inv.innerHTML=`<p class="k">הזמנה פרטית</p><p>ב-4 השעות הקרובות, הינך מוזמן/ת להנות מהתאמה מחושבת של <b>${p.discount}%</b> — חיסכון של <b>${money(p.price-curPrice(p))}</b> על מהדורה זו.</p>`;}
+  else inv.style.display="none";
+  $("dDesc").textContent=p.desc;
+  const low=p.stock<=4;
+  $("dStockLbl").textContent=low?`נותרו ${String(p.stock).padStart(2,"0")}`:"באטלייה";
+  $("dStockLbl").style.color=low?"var(--accent)":"var(--ink)";
+  $("dStockFill").style.width=Math.min(100,p.stock/12*100)+"%";
+  $("dStockFill").className="stock-fill"+(low?" low":"");
+  $("dStockNote").textContent=`${p.stock} מהדורות זמינות — משלוח תוך 3–5 ימים`;
+  $("dQty").textContent=currentQty;
+  $("acquireBtn").disabled=p.stock===0;
+  $("acquireBtn").textContent=p.stock===0?"אזל":"הוסף לאוסף";
+}
+
+function goHome(e){if(e)e.preventDefault();$("detailPage").style.display="none";document.getElementById("homeWrap").style.display="block";window.scrollTo(0,0);}
+$("qtyInc").onclick=()=>{currentQty++;$("dQty").textContent=currentQty;};
+$("qtyDec").onclick=()=>{if(currentQty>1){currentQty--;$("dQty").textContent=currentQty;}};
+$("acquireBtn").onclick=()=>{if(currentProduct)addToCart(currentProduct.id,currentQty);};
+
+function addToCart(id,qty){
+  const p=PRODUCTS.find(x=>x.id===id); if(!p)return;
+  const ex=cart.find(i=>i.id===id);
+  if(ex)ex.qty+=qty; else cart.push({...p,qty});
+  openCart(); renderCart();
+}
+function updateQty(id,q){cart=cart.map(i=>i.id===id?{...i,qty:Math.max(1,q)}:i);renderCart();}
+function removeItem(id){cart=cart.filter(i=>i.id!==id);renderCart();}
+
+function renderCart(){
+  const count=cart.reduce((s,i)=>s+i.qty,0);
+  $("cartCount").textContent=count>0?String(count).padStart(2,"0"):"";
+  const body=$("drawerBody");
+  if(cart.length===0){
+    body.innerHTML=`<div class="empty"><h3>מקום ריק ממתין</h3><p>אצור את בחירת הפריטים שלך.</p><button onclick="closeCart()">גלה את האטלייה</button></div>`;
+    $("drawerFoot").style.display="none";return;
+  }
+  body.innerHTML=cart.map(i=>`
+    <div class="ci">
+      <div class="thumb"><img src="${i.image}" alt="${i.name}"></div>
+      <div class="info">
+        <div>
+          <h3>${i.name}</h3>
+          <p class="cat">${i.category}</p>
+          <div class="pl">${money(curPrice(i))}${i.discount>0?`<s>${money(i.price)}</s>`:""}</div>
+        </div>
+        <div class="ctrl">
+          <div class="qmini">
+            <button onclick="updateQty('${i.id}',${i.qty-1})"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+            <span>${i.qty}</span>
+            <button onclick="updateQty('${i.id}',${i.qty+1})"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          </div>
+          <button class="rm" onclick="removeItem('${i.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+        </div>
+      </div>
+    </div>`).join("");
+  const origSub=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const sub=cart.reduce((s,i)=>s+curPrice(i)*i.qty,0);
+  const sav=origSub-sub;
+  $("drawerFoot").style.display="block";
+  $("savLine").style.display=sav>0?"":"none";
+  $("savings").textContent="-"+money(sav);
+  $("subtotal").textContent=money(sub);
+}
+function openCart(){$("overlay").classList.add("open");$("drawer").classList.add("open");document.body.style.overflow="hidden";}
+function closeCart(){$("overlay").classList.remove("open");$("drawer").classList.remove("open");document.body.style.overflow="";}
+$("cartBtn").onclick=openCart;
+$("drawerClose").onclick=closeCart;
+$("overlay").onclick=closeCart;
+$("burgerBtn").onclick=()=>$("mobileMenu").classList.toggle("open");
+$("mobileMenu").querySelectorAll("a").forEach(a=>a.onclick=()=>$("mobileMenu").classList.remove("open"));
+
+// wrap home sections for show/hide
+(function(){const home=document.createElement("div");home.id="homeWrap";
+home.append(document.querySelector(".topbar"),document.querySelector(".nav"),document.querySelector(".banner"),document.querySelector(".coll"),document.querySelector("footer"));
+document.body.insertBefore(home,$("detailPage").nextSibling);})();
+renderGrid();renderCart();
+
+// ===== SECRET ADMIN =====
+
+const secretAdminTrigger = document.getElementById("secretAdminTrigger");
+
+let secretAdminTimer = null;
+
+secretAdminTrigger.addEventListener("pointerdown", function(e){
+
+  clearTimeout(secretAdminTimer);
+
+  secretAdminTimer = setTimeout(function(){
+
+    document.getElementById("productAdmin").style.display = "block";
+    document.body.style.overflow = "hidden";
+
+  }, 10000); // 15 שניות
+
+});
+
+function cancelSecretAdmin(){
+  clearTimeout(secretAdminTimer);
+  secretAdminTimer = null;
+}
+
+secretAdminTrigger.addEventListener("pointerup", cancelSecretAdmin);
+secretAdminTrigger.addEventListener("pointercancel", cancelSecretAdmin);
+
+
+function openProductAdmin(){
+  document.getElementById("productAdmin").style.display = "block";
+  document.body.style.overflow = "hidden";
+}
+
+
+function closeProductAdmin(){
+  document.getElementById("productAdmin").style.display = "none";
+  document.body.style.overflow = "";
+}
+let uploadedProductImages = [];
+
+function previewProductImages(event) {
+  const files = Array.from(event.target.files);
+
+  if (files.length > 3) {
+    alert("ניתן להעלות עד 3 תמונות למוצר");
+    event.target.value = "";
+    uploadedProductImages = [];
+    document.getElementById("newImagesPreview").innerHTML = "";
+    return;
+  }
+
+  uploadedProductImages = [];
+
+  const preview = document.getElementById("newImagesPreview");
+  preview.innerHTML = "";
+
+  files.forEach(file => {
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+      uploadedProductImages.push(e.target.result);
+
+      const img = document.createElement("img");
+      img.src = e.target.result;
+      img.style.width = "100%";
+      img.style.aspectRatio = "1 / 1";
+      img.style.objectFit = "cover";
+
+      preview.appendChild(img);
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
+
+function createProduct() {
+  const name = document.getElementById("newName").value.trim();
+  const category = document.getElementById("newCategory").value.trim();
+  const price = Number(document.getElementById("newPrice").value);
+  const stock = Number(document.getElementById("newStock").value);
+  const desc = document.getElementById("newDesc").value.trim();
+
+  // בדיקות
+  if (!name) {
+    alert("חסר שם מוצר");
+    return;
+  }
+
+  if (!category) {
+    alert("חסרה קטגוריה");
+    return;
+  }
+
+  if (!price) {
+    alert("חסר מחיר");
+    return;
+  }
+
+  if (uploadedProductImages.length === 0) {
+    alert("נא להעלות לפחות תמונה אחת");
+    return;
+  }
+
+  // התמונה הראשונה היא התמונה הראשית
+  const image = uploadedProductImages[0];
+
+  // כל התמונות — עד 3
+  const images = [...uploadedProductImages];
+
+  // הנחה אקראית
+  const discounts = [0, 10, 15, 18, 20, 25, 30];
+
+  const discount =
+    discounts[Math.floor(Math.random() * discounts.length)];
+
+  const newProduct = {
+    id: "product_" + Date.now(),
+    name: name,
+    desc: desc,
+    price: price,
+    stock: stock || 1,
+
+    // תמונה ראשית
+    image: image,
+
+    // כל התמונות
+    images: images,
+
+    category: category,
+    discount: discount,
+    curated: false
+  };
+
+  // הוספת המוצר
+  PRODUCTS.push(newProduct);
+
+  // רענון הקולקציה
+  renderGrid();
+
+  // ניקוי הטופס
+  document.getElementById("newName").value = "";
+  document.getElementById("newCategory").value = "";
+  document.getElementById("newPrice").value = "";
+  document.getElementById("newStock").value = "";
+  document.getElementById("newDesc").value = "";
+
+  // ניקוי התמונות
+  document.getElementById("newImageFile").value = "";
+  document.getElementById("newImagesPreview").innerHTML = "";
+  uploadedProductImages = [];
+
+  // סגירת מסך הניהול
+  closeProductAdmin();
+
+  alert("המוצר נוסף בהצלחה — הנחה " + discount + "%");
+}
+
+function goToPayment() {
+  const orderItems = cart.map(item => {
+    const product = PRODUCTS.find(p => p.id === item.id);
+
+    return {
+      id: product.id,
+      name: product.name,
+      image: product.image,
+      price: product.price,
+      discount: product.discount || 0,
+      qty: item.qty
+    };
+  });
+
+  localStorage.setItem("paymentOrder", JSON.stringify(orderItems));
+
+  window.location.href = "index2.html";
+}
+</script>
+</body>
+</html>
